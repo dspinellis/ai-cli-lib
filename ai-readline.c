@@ -82,15 +82,7 @@ initialize(void)
 		fprintf(stderr, "Unable to bind readline key for AI completion.\n");
 }
 
-char *
-readline(const char *input_prompt)
-{
-	if (!real_readline)
-		initialize();
-
-	return real_readline(input_prompt);
-}
-
 __attribute__((constructor)) static void setup(void)
 {
+	initialize();
 }
