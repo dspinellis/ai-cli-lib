@@ -8,5 +8,8 @@ rl-test: rl-test.c
 ai-readline.so: ai-readline.c
 	gcc -shared -fPIC ai-readline.c -o ai-readline.so -ldl
 
-test:$(PROGS)
+test: $(PROGS)
 	LD_PRELOAD=`pwd`/ai-readline.so rl-test
+
+test-bash: $(PROGS)
+	LD_PRELOAD=`pwd`/ai-readline.so bash

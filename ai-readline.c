@@ -20,43 +20,77 @@
 #define _GNU_SOURCE
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dlfcn.h>
+#include <readline/readline.h>
 #include <readline/history.h>
 
 typedef char *(*readline_t)(const char *prompt);
 static readline_t real_readline;
 
+/*
+ * The user has has asked for AI to be queried on the typed text
+ * Replace the user's text with the queried on
+ */
+static int
+query_ai(int count, int key)
+{
+	char buff[1024];
+	add_history(rl_line_buffer);
+	snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", rl_line_buffer);
+	rl_begin_undo_group();
+	rl_delete_text(0, rl_end);
+	rl_point = 0;
+	rl_insert_text(buff);
+	rl_end_undo_group();
+}
 
-// Prompt AI to generate the input
-static const char ai_prompt[] = "`ai ";
+static bool
+is_emacs_mode(void)
+{
+	char *editing_mode = rl_get_keymap_name(rl_get_keymap());
+	return strcmp(editing_mode, "emacs") == 0;
+}
+
+// Initialize hook and key bindigs
+static void
+initialize(void)
+{
+	real_readline = dlsym(RTLD_NEXT, "readline");
+
+	// Read any configuration from .inputrc
+	rl_initialize();
+
+	// Add named function, making it available to the user
+	rl_add_defun("query-ai", query_ai, -1);
+
+	// Bind it to ^Xa (Emacs) or V (vi)
+	int ret;
+	char *binding;
+	if (is_emacs_mode()) {
+		binding = "\\C-xa";
+		ret = rl_bind_keyseq(binding, query_ai);
+	} else {
+		binding = "V";
+		ret = rl_bind_key_in_map(*binding, query_ai, vi_movement_keymap);
+	}
+	if (ret == 0)
+		fprintf(stderr, "AI completion bound to [%s]\n", binding);
+	else
+		fprintf(stderr, "Unable to bind readline key for AI completion.\n");
+}
 
 char *
 readline(const char *input_prompt)
 {
-	if (!real_readline) {
-		real_readline = dlsym(RTLD_NEXT, "readline");
-	}
+	if (!real_readline)
+		initialize();
 
-	char *typed = real_readline(input_prompt);
-	if (!typed)
-		return typed;
-
-	if (memcmp(typed, ai_prompt, sizeof(ai_prompt) - 1) != 0)
-		return typed;
-
-	const char *user_prompt = typed + sizeof(ai_prompt) - 1;
-	// Invoke AI API and get its response
-	char buff[1024];
-	snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", user_prompt);
-	char *ai_response = strdup(buff);
-	add_history(typed);
-	free(typed);
-	return ai_response;
+	return real_readline(input_prompt);
 }
 
 __attribute__((constructor)) static void setup(void)
 {
-	fprintf(stderr, "Use \"%s your-prompt\" to have AI generate the input for you.\n", ai_prompt);
 }
