@@ -29,6 +29,8 @@
 
 #include "ini.h"
 
+bool verbose;
+
 const char config_name[] = ".airlconfig";
 
 typedef struct {
@@ -36,6 +38,8 @@ typedef struct {
 	const char *api_key;
 	// Number of past prompts to provide as context
 	int prompt_context;
+	// System prompt
+	const char *prompt_system;
 } config_t;
 
 typedef char *(*readline_t)(const char *prompt);
@@ -71,9 +75,13 @@ config_handler(void* user, const char* section, const char* name,
 {
 	config_t *pconfig = (config_t *)user;
 
+	if (verbose)
+		printf("Config [%s]: %s=%s\n", section, name, value);
 	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 	if (MATCH("prompt", "context")) {
 		pconfig->prompt_context = atoi(value);
+	} else if (MATCH("prompt", "system")) {
+		pconfig->prompt_system = strdup(value);
 	} else if (MATCH("API", "endpoint")) {
 		pconfig->api_endpoint = strdup(value);
 	} else if (MATCH("API", "key")) {
@@ -85,27 +93,26 @@ config_handler(void* user, const char* section, const char* name,
 }
 
 /*
- * Read the configration file from the current directory or $HOME into config.
- * Return true if the file could be read, otherwise return false.
+ * Read the configuration file from diverse directories into config.
  */
-static bool
+static void
 read_config(config_t *config)
 {
+	ini_parse("/usr/share/ai-readline/config", config_handler, config);
+	ini_parse("/usr/local/share/ai-readline/config", config_handler, config);
+	ini_parse("ai-readline-config", config_handler, config);
 
-	// Read from current directory
-	if (ini_parse(config_name, config_handler, config) == 0)
-		return true;
-
-	// Read fom the home directory
+	// $HOME/.airlconfig
 	char *home_dir;
-	if ((home_dir = getenv("HOME")) == NULL)
-		return false;
+	if ((home_dir = getenv("HOME")) != NULL) {
+		char *home_config;
+		asprintf(&home_config, "%s/%s", home_dir, config_name);
+		ini_parse(home_config, config_handler, &config) == 0;
+		free(home_config);
+	}
 
-	char *home_config;
-	asprintf(&home_config, "%s/%s", home_dir, config_name);
-	bool ret = ini_parse(home_config, config_handler, &config) == 0;
-	free(home_config);
-	return ret;
+	// .airlconfig
+	ini_parse(config_name, config_handler, config);
 }
 
 // Initialize hook and key bindigs
@@ -114,13 +121,15 @@ initialize(void)
 {
 	static config_t config;
 
-	if (!read_config(&config)) {
-		fprintf(stderr, "Can't load '.airlconfig'.\n");
+	read_config(&config);
+
+	if (!config.prompt_system) {
+		fprintf(stderr, "No default ai-readline configuration loaded.  Installation problem?\n");
 		return;
 	}
 
 	if (!config.api_key) {
-		fprintf(stderr, "No API key set in .airlconfig.\n");
+		fprintf(stderr, "No API key configured. Please obtain and configure an API key.\n");
 		return;
 	}
 
