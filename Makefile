@@ -1,14 +1,19 @@
-PROGS=rl-test ai-readline.so
+PROGS=rl_driver ai_readline.so
 
-TEST_PROG?=rl-test
 
 all: $(PROGS)
 
-rl-test: rl-test.c
-	cc rl-test.c -lreadline -o rl-test
+rl_driver: rl_driver.c
+	cc rl_driver.c -lreadline -o $@
 
-ai-readline.so: ai-readline.c
-	gcc -shared -fPIC ai-readline.c -o ai-readline.so -ldl
+ai_readline.so: ai_readline.c
+	gcc -shared -fPIC ai_readline.c -o $@ -ldl
 
-test: $(PROGS)
-	LD_PRELOAD=`pwd`/ai-readline.so $(TEST_PROG)
+e2e-test: $(PROGS)
+	LD_PRELOAD=`pwd`/ai_readline.so ./rl_driver
+
+all-tests:
+	gcc all_tests.c json_parse_test.c CuTest.c -o $@
+
+unit-test: all-tests
+	./all-tests

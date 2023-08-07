@@ -38,8 +38,9 @@ static int
 query_ai(int count, int key)
 {
 	char buff[1024];
-	add_history(rl_line_buffer);
-	snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", rl_line_buffer);
+	// add_history(rl_line_buffer);
+	// snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", rl_line_buffer);
+	snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", "foo");
 	rl_begin_undo_group();
 	rl_delete_text(0, rl_end);
 	rl_point = 0;
