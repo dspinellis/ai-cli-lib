@@ -28,7 +28,6 @@
 #include <readline/history.h>
 
 typedef char *(*readline_t)(const char *prompt);
-static readline_t real_readline;
 
 /*
  * The user has has asked for AI to be queried on the typed text
@@ -59,8 +58,6 @@ is_emacs_mode(void)
 static void
 initialize(void)
 {
-	real_readline = dlsym(RTLD_NEXT, "readline");
-
 	// Read any configuration from .inputrc
 	rl_initialize();
 
