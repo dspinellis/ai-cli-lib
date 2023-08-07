@@ -7,7 +7,7 @@ rl_driver: rl_driver.c
 	cc rl_driver.c -lreadline -o $@
 
 ai_readline.so: ai_readline.c
-	gcc -shared -fPIC ai_readline.c -o $@ -ldl
+	gcc -shared -fPIC ai_readline.c ini.c -o $@ -ldl
 
 e2e-test: $(PROGS)
 	LD_PRELOAD=`pwd`/ai_readline.so ./rl_driver
