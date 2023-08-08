@@ -1,3 +1,9 @@
+ai_readline.so
+.airlconfig
+all-tests
+all_tests
+eg.py
+.gdb_history
+rl_driver
+Session.vim
 *.swp
-ai-readline.so
-rl-test

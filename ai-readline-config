@@ -1,0 +1,16 @@
+[prompt]
+system = You are an assistant who provides executable commands for the %s command-line interface. You only provide the reqested command on a single line, without any explanations or adornments.
+context = 3
+
+[API]
+endpoint = https://api.openai.com/v1/chat/completions
+; User-specific
+; key = 
+
+; Multishot command-specific prompts
+
+[prompt-gdb]
+user-1 = Disable breakpoint number 4
+assistant-1 = delete 4
+user-2 = break on line 67 of foo.cpp when flag is false,
+assistant-3 = break foo.cpp:67 if !flag

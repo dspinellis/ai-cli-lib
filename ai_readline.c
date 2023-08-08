@@ -27,20 +27,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#include "ini.h"
-
-bool verbose;
-
-const char config_name[] = ".airlconfig";
-
-typedef struct {
-	const char *api_endpoint;
-	const char *api_key;
-	// Number of past prompts to provide as context
-	int prompt_context;
-	// System prompt
-	const char *prompt_system;
-} config_t;
+#include "config.h"
 
 typedef char *(*readline_t)(const char *prompt);
 
@@ -67,52 +54,6 @@ is_emacs_mode(void)
 {
 	char *editing_mode = rl_get_keymap_name(rl_get_keymap());
 	return strcmp(editing_mode, "emacs") == 0;
-}
-
-static int
-config_handler(void* user, const char* section, const char* name,
-    const char* value)
-{
-	config_t *pconfig = (config_t *)user;
-
-	if (verbose)
-		printf("Config [%s]: %s=%s\n", section, name, value);
-	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-	if (MATCH("prompt", "context")) {
-		pconfig->prompt_context = atoi(value);
-	} else if (MATCH("prompt", "system")) {
-		pconfig->prompt_system = strdup(value);
-	} else if (MATCH("API", "endpoint")) {
-		pconfig->api_endpoint = strdup(value);
-	} else if (MATCH("API", "key")) {
-		pconfig->api_key = strdup(value);
-	} else {
-		return 0;  /* unknown section/name, error */
-	}
-	return 1;
-}
-
-/*
- * Read the configuration file from diverse directories into config.
- */
-static void
-read_config(config_t *config)
-{
-	ini_parse("/usr/share/ai-readline/config", config_handler, config);
-	ini_parse("/usr/local/share/ai-readline/config", config_handler, config);
-	ini_parse("ai-readline-config", config_handler, config);
-
-	// $HOME/.airlconfig
-	char *home_dir;
-	if ((home_dir = getenv("HOME")) != NULL) {
-		char *home_config;
-		asprintf(&home_config, "%s/%s", home_dir, config_name);
-		ini_parse(home_config, config_handler, &config) == 0;
-		free(home_config);
-	}
-
-	// .airlconfig
-	ini_parse(config_name, config_handler, config);
 }
 
 // Initialize hook and key bindigs
