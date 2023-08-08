@@ -18,17 +18,25 @@
  *  limitations under the License.
  */
 
-#include <stdbool.h>
+#include "CuTest.h"
+#include "config.h"
 
-typedef struct {
-	const char *api_endpoint;
-	const char *api_key;
-	// Number of past prompts to provide as context
-	int prompt_context;
-	// System prompt
-	const char *prompt_system;
-} config_t;
+void
+test_read_config(CuTest* tc)
+{
+	static config_t config;
 
-extern bool verbose;
+	read_config(&config);
 
-void read_config(config_t *config);
+	CuAssertPtrNotNull(tc, config.prompt_system);
+}
+
+CuSuite*
+cu_config_suite(void)
+{
+	CuSuite* suite = CuSuiteNew();
+
+	SUITE_ADD_TEST(suite, test_read_config);
+
+	return suite;
+}
