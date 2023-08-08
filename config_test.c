@@ -28,6 +28,8 @@ test_read_config(CuTest* tc)
 
 	read_config(&config);
 
+	CuAssertIntEquals(tc, 3, config.prompt_context);
+	CuAssertPtrNotNull(tc, config.api_endpoint);
 	CuAssertPtrNotNull(tc, config.prompt_system);
 }
 

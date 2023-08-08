@@ -42,19 +42,21 @@ config_handler(void* user, const char* section, const char* name,
 
 	if (verbose)
 		printf("Config [%s]: %s=%s\n", section, name, value);
-	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-	if (MATCH("prompt", "context")) {
-		pconfig->prompt_context = atoi(value);
-	} else if (MATCH("prompt", "system")) {
-		pconfig->prompt_system = safe_strdup(value);
-	} else if (MATCH("API", "endpoint")) {
-		pconfig->api_endpoint = safe_strdup(value);
-	} else if (MATCH("API", "key")) {
-		pconfig->api_key = safe_strdup(value);
-	} else {
-		return 0;  /* unknown section/name, error */
-	}
-	return 1;
+
+	// Set the specified section and name to the given value
+	#define MATCH(s, n, v) do { \
+		if (strcmp(section, #s) == 0 && strcmp(name, #n) == 0) { \
+			pconfig->s ## _ ## n = v; \
+			return 1; \
+		} \
+	} while(0);
+
+	MATCH(prompt, context, atoi(value));
+	MATCH(prompt, system, safe_strdup(value));
+	MATCH(api, endpoint, safe_strdup(value));
+	MATCH(api, key, safe_strdup(value));
+
+	return 0;  /* unknown section/name, error */
 }
 
 /*

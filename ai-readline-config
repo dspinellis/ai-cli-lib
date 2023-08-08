@@ -2,7 +2,7 @@
 system = You are an assistant who provides executable commands for the %s command-line interface. You only provide the reqested command on a single line, without any explanations or adornments.
 context = 3
 
-[API]
+[api]
 endpoint = https://api.openai.com/v1/chat/completions
 ; User-specific
 ; key = 
