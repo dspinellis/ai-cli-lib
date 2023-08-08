@@ -1,5 +1,5 @@
 PROGS=rl_driver ai_readline.so
-RL_SRC=ai_readline.c ini.c config.c
+RL_SRC=ai_readline.c config.c ini.c memory.c
 
 
 all: $(PROGS)

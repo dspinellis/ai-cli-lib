@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include "config.h"
+#include "memory.h"
 #include "ini.h"
 
 bool verbose;
@@ -45,11 +46,11 @@ config_handler(void* user, const char* section, const char* name,
 	if (MATCH("prompt", "context")) {
 		pconfig->prompt_context = atoi(value);
 	} else if (MATCH("prompt", "system")) {
-		pconfig->prompt_system = strdup(value);
+		pconfig->prompt_system = safe_strdup(value);
 	} else if (MATCH("API", "endpoint")) {
-		pconfig->api_endpoint = strdup(value);
+		pconfig->api_endpoint = safe_strdup(value);
 	} else if (MATCH("API", "key")) {
-		pconfig->api_key = strdup(value);
+		pconfig->api_key = safe_strdup(value);
 	} else {
 		return 0;  /* unknown section/name, error */
 	}
@@ -70,7 +71,7 @@ read_config(config_t *config)
 	char *home_dir;
 	if ((home_dir = getenv("HOME")) != NULL) {
 		char *home_config;
-		asprintf(&home_config, "%s/%s", home_dir, config_name);
+		safe_asprintf(&home_config, "%s/%s", home_dir, config_name);
 		ini_parse(home_config, config_handler, &config) == 0;
 		free(home_config);
 	}
