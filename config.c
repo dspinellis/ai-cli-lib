@@ -112,10 +112,12 @@ config_handler(void* user, const char* section, const char* name,
 		} \
 	} while(0);
 
-	MATCH(prompt, context, atoi(value));
-	MATCH(prompt, system, safe_strdup(value));
 	MATCH(api, endpoint, safe_strdup(value));
 	MATCH(api, key, safe_strdup(value));
+	MATCH(binding, vi, safe_strdup(value));
+	MATCH(binding, emacs, safe_strdup(value));
+	MATCH(prompt, context, strtocard(value));
+	MATCH(prompt, system, safe_strdup(value));
 
 	if (!starts_with(section, prompt_prefix))
 		return 0;  /* unknown section/name, error */

@@ -5,10 +5,14 @@ context = 3
 [api]
 endpoint = https://api.openai.com/v1/chat/completions
 ; User-specific
-; key = 
+; key =
+
+; Key bindings
+[binding]
+vi = V
+emacs = \C-xa
 
 ; Multishot command-specific prompts
-
 [prompt-gdb]
 user-1 = Disable breakpoint number 4
 assistant-1 = delete 4

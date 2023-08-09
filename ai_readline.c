@@ -95,9 +95,11 @@ initialize(void)
 	// Add named function, making it available to the user
 	rl_add_defun("query-ai", query_ai, -1);
 
-	// Bind it to ^Xa (Emacs) or V (vi)
-	rl_bind_keyseq("\\C-xa", query_ai);
-	rl_bind_key_in_map('V', query_ai, vi_movement_keymap_ptr);
+	// Bind it to (Emacs and vi
+	if (config.binding_emacs)
+		rl_bind_keyseq(config.binding_emacs, query_ai);
+	if (config.binding_vi)
+		rl_bind_key_in_map(*config.binding_vi, query_ai, vi_movement_keymap_ptr);
 }
 
 __attribute__((constructor)) static void setup(void)

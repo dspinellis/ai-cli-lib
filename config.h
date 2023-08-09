@@ -32,11 +32,13 @@ typedef struct uaprompt {
 } *uaprompt_t;
 
 typedef struct {
-	const char *api_endpoint;
-	const char *api_key;
+	const char *api_endpoint;	// API endpoint URL
+	const char *api_key;		// API key
 	int prompt_context;		// # past prompts to provide as context
 	const char *prompt_system;	// System prompt
 	uaprompt_t shots;		// Program-specific training shots
+	const char *binding_vi;		// Single character for invoking AI help in Vi mode
+	const char *binding_emacs;	// Character sequence for invoking AI help in Emacs mode
 } config_t;
 
 extern bool verbose;
