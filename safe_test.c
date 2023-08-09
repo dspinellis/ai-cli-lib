@@ -1,9 +1,7 @@
 /*-
  *
  *  ai-readline - readline wrapper to obtain a generative AI suggestion
- *  Safe memory allocation functions.
- *  These functions exit the program with an error messge if allocation
- *  fails.
+ *  Safe memory allocation and other functions.
  *
  *  Copyright 2023 Diomidis Spinellis
  *
@@ -20,7 +18,34 @@
  *  limitations under the License.
  */
 
-int safe_asprintf(char **strp, const char *fmt, ...);
-void *safe_malloc(size_t size);
-void *safe_realloc(void *ptr, size_t size);
-char *safe_strdup(const char *s);
+#include "CuTest.h"
+#include "safe.h"
+
+void
+test_strtocard(CuTest* tc)
+{
+	CuAssertIntEquals(tc, 12, strtocard("12"));
+	CuAssertIntEquals(tc, -1, strtocard(""));
+	CuAssertIntEquals(tc, -1, strtocard("x"));
+	CuAssertIntEquals(tc, -1, strtocard("3x"));
+	CuAssertIntEquals(tc, -1, strtocard("-3"));
+}
+
+void
+test_asprintf(CuTest* tc)
+{
+	char *result;
+	safe_asprintf(&result, "a=%d", 42);
+	CuAssertStrEquals(tc, "a=42", result);
+}
+
+CuSuite*
+cu_safe_suite(void)
+{
+	CuSuite* suite = CuSuiteNew();
+
+	SUITE_ADD_TEST(suite, test_strtocard);
+	SUITE_ADD_TEST(suite, test_asprintf);
+
+	return suite;
+}

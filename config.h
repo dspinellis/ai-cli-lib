@@ -20,15 +20,26 @@
 
 #include <stdbool.h>
 
+// Number of supported n-shot prompts
+#define NPROMPTS 3
+
+// Linked list for up to three training shots per program
+typedef struct uaprompt {
+	const char *program;
+	const char *user[NPROMPTS];
+	const char *assistant[NPROMPTS];
+	struct uaprompt *next;
+} *uaprompt_t;
+
 typedef struct {
 	const char *api_endpoint;
 	const char *api_key;
-	// Number of past prompts to provide as context
-	int prompt_context;
-	// System prompt
-	const char *prompt_system;
+	int prompt_context;		// # past prompts to provide as context
+	const char *prompt_system;	// System prompt
+	uaprompt_t shots;		// Program-specific training shots
 } config_t;
 
 extern bool verbose;
 
 void read_config(config_t *config);
+uaprompt_t prompt_find(config_t * config, const char *program_name);

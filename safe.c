@@ -1,9 +1,9 @@
 /*-
  *
  *  ai-readline - readline wrapper to obtain a generative AI suggestion
- *  Safe memory allocation functions.
- *  These functions exit the program with an error messge if allocation
- *  fails.
+ *  Safe memory allocation and other functions.
+ *  The allocation functions exit the program with an error messge
+ *  if allocation fails.
  *
  *  Copyright 2023 Diomidis Spinellis
  *
@@ -22,6 +22,7 @@
 
 #define _GNU_SOURCE
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -43,6 +44,14 @@ void *
 safe_malloc(size_t size)
 {
 	void *p = malloc(size);
+	verify(p != NULL);
+	return p;
+}
+
+void *
+safe_calloc(size_t nmemb, size_t size)
+{
+	void *p = calloc(nmemb, size);
 	verify(p != NULL);
 	return p;
 }
@@ -75,4 +84,20 @@ safe_asprintf(char **strp, const char *fmt, ...)
 
 	verify(result != -1);
 	return result;
+}
+
+// Return the cardinal number in string or -1 on error
+int
+strtocard(const char *string)
+{
+	if (*string == '\0')
+		return -1;
+
+	char *endptr;
+	errno = 0;
+	long value = strtol(string, &endptr, 10);
+
+	if (errno != 0 || *endptr != '\0' || value < 0)
+		return -1;
+	return (int)value;
 }

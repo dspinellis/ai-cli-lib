@@ -47,6 +47,7 @@ query_ai(int count, int key)
 	rl_point = 0;
 	rl_insert_text(buff);
 	rl_end_undo_group();
+	return 0;
 }
 
 static bool

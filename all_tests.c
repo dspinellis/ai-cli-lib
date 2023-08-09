@@ -4,14 +4,17 @@
 
 CuSuite* cu_config_suite();
 CuSuite* cu_json_suite();
+CuSuite* cu_safe_suite();
 
-int run_all_tests(void)
+void
+run_all_tests(void)
 {
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
 	CuSuiteAddSuite(suite, cu_config_suite());
 	CuSuiteAddSuite(suite, cu_json_suite());
+	CuSuiteAddSuite(suite, cu_safe_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

@@ -31,6 +31,46 @@ test_read_config(CuTest* tc)
 	CuAssertIntEquals(tc, 3, config.prompt_context);
 	CuAssertPtrNotNull(tc, config.api_endpoint);
 	CuAssertPtrNotNull(tc, config.prompt_system);
+
+	uaprompt_t gdb = prompt_find(&config, "gdb");
+	CuAssertPtrNotNull(tc, gdb);
+	CuAssertStrEquals(tc, "Disable breakpoint number 4", gdb->user[0]);
+	CuAssertStrEquals(tc, "delete 4", gdb->assistant[0]);
+	CuAssertTrue(tc, gdb->user[2] == NULL);
+}
+
+void
+test_starts_with(CuTest* tc)
+{
+	extern bool starts_with(const char *string, const char *prefix);
+
+	CuAssertTrue(tc, starts_with("prompt-gdb", "prompt-"));
+	CuAssertTrue(tc, !starts_with("prompt", "prompt-"));
+}
+
+void
+test_prompt_number(CuTest* tc)
+{
+	extern int prompt_number(const char *name, const char *prompt_prefix);
+
+	CuAssertIntEquals(tc, 0, prompt_number("user-1", "user-"));
+	CuAssertIntEquals(tc, 2, prompt_number("user-3", "user-"));
+	CuAssertIntEquals(tc, -1, prompt_number("user-4", "user-"));
+	CuAssertIntEquals(tc, -1, prompt_number("user-n4", "user-"));
+	CuAssertIntEquals(tc, -1, prompt_number("user-4n", "user-"));
+}
+
+void
+test_prompt_add_find(CuTest* tc)
+{
+	extern uaprompt_t prompt_add(config_t * config, const char *program_name);
+	static config_t config;
+	CuAssertTrue(tc, prompt_find(&config, "foo") == NULL);
+	uaprompt_t p = prompt_add(&config, "foo");
+	(void)prompt_add(&config, "bar");
+	CuAssertPtrNotNull(tc, p);
+	uaprompt_t p2 = prompt_find(&config, "foo");
+	CuAssertPtrEquals(tc, p2, p);
 }
 
 CuSuite*
@@ -38,6 +78,9 @@ cu_config_suite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
+	SUITE_ADD_TEST(suite, test_starts_with);
+	SUITE_ADD_TEST(suite, test_prompt_number);
+	SUITE_ADD_TEST(suite, test_prompt_add_find);
 	SUITE_ADD_TEST(suite, test_read_config);
 
 	return suite;
