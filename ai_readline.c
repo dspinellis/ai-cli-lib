@@ -59,12 +59,17 @@ query_ai(int count, int key)
 	return 0;
 }
 
-// Initialize hook and key bindigs
-static void
-initialize(void)
+
+/*
+ * This is called when the dynamic library is loaded.
+ * If the program is linked with readline(3),
+ * read configuration and set keybindings for AI completion.
+ */
+__attribute__((constructor)) static void
+setup(void)
 {
 	/*
-	 * See if readline library is linked and obtain required symbols
+	 * See if readline(3) is linked and obtain required symbols
 	 * This avoids undefined symbol errors for programs not
 	 * using readline and also the initialization overhead.
 	 */
@@ -95,14 +100,9 @@ initialize(void)
 	// Add named function, making it available to the user
 	rl_add_defun("query-ai", query_ai, -1);
 
-	// Bind it to (Emacs and vi
+	// Bind it to Emacs and vi
 	if (config.binding_emacs)
 		rl_bind_keyseq(config.binding_emacs, query_ai);
 	if (config.binding_vi)
 		rl_bind_key_in_map(*config.binding_vi, query_ai, vi_movement_keymap_ptr);
-}
-
-__attribute__((constructor)) static void setup(void)
-{
-	initialize();
 }
