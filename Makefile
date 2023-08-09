@@ -17,7 +17,7 @@ e2e-test: $(PROGS)
 	LD_PRELOAD=`pwd`/ai_readline.so ./rl_driver
 
 all-tests: $(TEST_SRC) $(RL_SRC)
-	gcc $(CFLAGS) -O0 -g all_tests.c  $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -o $@
+	gcc $(CFLAGS) -O0 -g all_tests.c  $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -o $@
 
 unit-test: all-tests
 	./all-tests

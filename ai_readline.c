@@ -32,6 +32,16 @@
 typedef char *(*readline_t)(const char *prompt);
 
 /*
+ * Dynamically obtained pointer to readline(3) variables..
+ * This avoids an undefined symbol errors when a program isn't linked with
+ * readline.
+ */
+static char **rl_line_buffer_ptr;
+static int *rl_end_ptr;
+static int *rl_point_ptr;
+static Keymap vi_movement_keymap_ptr;
+
+/*
  * The user has has asked for AI to be queried on the typed text
  * Replace the user's text with the queried on
  */
@@ -39,12 +49,11 @@ static int
 query_ai(int count, int key)
 {
 	char buff[1024];
-	// add_history(rl_line_buffer);
-	// snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", rl_line_buffer);
-	snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", "foo");
+	add_history(*rl_line_buffer_ptr);
+	snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", *rl_line_buffer_ptr);
 	rl_begin_undo_group();
-	rl_delete_text(0, rl_end);
-	rl_point = 0;
+	rl_delete_text(0, *rl_end_ptr);
+	*rl_point_ptr = 0;
 	rl_insert_text(buff);
 	rl_end_undo_group();
 	return 0;
@@ -61,6 +70,21 @@ is_emacs_mode(void)
 static void
 initialize(void)
 {
+	/*
+	 * See if readline library is linked and obtain required symbols
+	 * This avoids undefined symbol errors for programs not
+	 * using readline and also the initialization overhead.
+	 */
+	dlerror();
+	rl_line_buffer_ptr = dlsym(RTLD_DEFAULT, "rl_line_buffer");
+	if (dlerror())
+		return; // Program not linked with readline(3)
+	rl_end_ptr = dlsym(RTLD_DEFAULT, "rl_end");
+	rl_point_ptr = dlsym(RTLD_DEFAULT, "rl_point");
+	vi_movement_keymap_ptr = dlsym(RTLD_DEFAULT, "vi_movement_keymap");
+	// printf("%p %p %p\n", vi_movement_keymap_ptr, *vi_movement_keymap_ptr, vi_movement_keymap);
+
+
 	static config_t config;
 
 	read_config(&config);
@@ -89,7 +113,7 @@ initialize(void)
 		ret = rl_bind_keyseq(binding, query_ai);
 	} else {
 		binding = "V";
-		ret = rl_bind_key_in_map(*binding, query_ai, vi_movement_keymap);
+		ret = rl_bind_key_in_map(*binding, query_ai, vi_movement_keymap_ptr);
 	}
 	if (ret == 0)
 		fprintf(stderr, "AI completion bound to [%s]\n", binding);
