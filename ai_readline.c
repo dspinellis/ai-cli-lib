@@ -59,13 +59,6 @@ query_ai(int count, int key)
 	return 0;
 }
 
-static bool
-is_emacs_mode(void)
-{
-	char *editing_mode = rl_get_keymap_name(rl_get_keymap());
-	return strcmp(editing_mode, "emacs") == 0;
-}
-
 // Initialize hook and key bindigs
 static void
 initialize(void)
@@ -79,11 +72,11 @@ initialize(void)
 	rl_line_buffer_ptr = dlsym(RTLD_DEFAULT, "rl_line_buffer");
 	if (dlerror())
 		return; // Program not linked with readline(3)
+
+	// Obtain remaining variable symbols
 	rl_end_ptr = dlsym(RTLD_DEFAULT, "rl_end");
 	rl_point_ptr = dlsym(RTLD_DEFAULT, "rl_point");
 	vi_movement_keymap_ptr = dlsym(RTLD_DEFAULT, "vi_movement_keymap");
-	// printf("%p %p %p\n", vi_movement_keymap_ptr, *vi_movement_keymap_ptr, vi_movement_keymap);
-
 
 	static config_t config;
 
@@ -99,26 +92,12 @@ initialize(void)
 		return;
 	}
 
-	// Read any configuration from .inputrc
-	rl_initialize();
-
 	// Add named function, making it available to the user
 	rl_add_defun("query-ai", query_ai, -1);
 
 	// Bind it to ^Xa (Emacs) or V (vi)
-	int ret;
-	char *binding;
-	if (is_emacs_mode()) {
-		binding = "\\C-xa";
-		ret = rl_bind_keyseq(binding, query_ai);
-	} else {
-		binding = "V";
-		ret = rl_bind_key_in_map(*binding, query_ai, vi_movement_keymap_ptr);
-	}
-	if (ret == 0)
-		fprintf(stderr, "AI completion bound to [%s]\n", binding);
-	else
-		fprintf(stderr, "Unable to bind readline key for AI completion.\n");
+	rl_bind_keyseq("\\C-xa", query_ai);
+	rl_bind_key_in_map('V', query_ai, vi_movement_keymap_ptr);
 }
 
 __attribute__((constructor)) static void setup(void)
