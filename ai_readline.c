@@ -28,8 +28,7 @@
 #include <readline/history.h>
 
 #include "config.h"
-
-typedef char *(*readline_t)(const char *prompt);
+#include "openai_fetch.h"
 
 /*
  * Dynamically obtained pointer to readline(3) variables..
@@ -40,6 +39,10 @@ static char **rl_line_buffer_ptr;
 static int *rl_end_ptr;
 static int *rl_point_ptr;
 static Keymap vi_movement_keymap_ptr;
+static int *history_length_ptr;
+
+// Loaded configuration
+static config_t config;
 
 /*
  * The user has has asked for AI to be queried on the typed text
@@ -48,14 +51,20 @@ static Keymap vi_movement_keymap_ptr;
 static int
 query_ai(int count, int key)
 {
-	char buff[1024];
+	static char *prev_response;
+
+	if (prev_response)
+		free(prev_response);
+
 	add_history(*rl_line_buffer_ptr);
-	snprintf(buff, sizeof(buff), "The AI answer to \"%s\" is 42", *rl_line_buffer_ptr);
+	char *response = openai_fetch(&config, *rl_line_buffer_ptr,
+	    *history_length_ptr);
 	rl_begin_undo_group();
 	rl_delete_text(0, *rl_end_ptr);
 	*rl_point_ptr = 0;
-	rl_insert_text(buff);
+	rl_insert_text(response);
 	rl_end_undo_group();
+	prev_response = response;
 	return 0;
 }
 
@@ -78,12 +87,12 @@ setup(void)
 	if (dlerror())
 		return; // Program not linked with readline(3)
 
+
 	// Obtain remaining variable symbols
 	rl_end_ptr = dlsym(RTLD_DEFAULT, "rl_end");
 	rl_point_ptr = dlsym(RTLD_DEFAULT, "rl_point");
 	vi_movement_keymap_ptr = dlsym(RTLD_DEFAULT, "vi_movement_keymap");
-
-	static config_t config;
+	history_length_ptr = dlsym(RTLD_DEFAULT, "history_length");
 
 	read_config(&config);
 
@@ -92,8 +101,13 @@ setup(void)
 		return;
 	}
 
-	if (!config.api_key) {
+	if (!config.openai_key) {
 		fprintf(stderr, "No API key configured. Please obtain and configure an API key.\n");
+		return;
+	}
+
+	if (openai_init(&config) < 0) {
+		fprintf(stderr, "Fetch initialization failed.\n");
 		return;
 	}
 

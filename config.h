@@ -18,6 +18,8 @@
  *  limitations under the License.
  */
 
+#pragma once
+
 #include <stdbool.h>
 
 // Number of supported n-shot prompts
@@ -32,8 +34,10 @@ typedef struct uaprompt {
 } *uaprompt_t;
 
 typedef struct {
-	const char *api_endpoint;	// API endpoint URL
-	const char *api_key;		// API key
+	const char *openai_endpoint;	// API endpoint URL
+	const char *openai_key;		// API key
+	const char *openai_model;	// Model to use (e.g. gpt-3.5)
+	double openai_temperature;	// Generation temperature
 	int prompt_context;		// # past prompts to provide as context
 	const char *prompt_system;	// System prompt
 	uaprompt_t shots;		// Program-specific training shots

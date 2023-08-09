@@ -19,7 +19,7 @@
  */
 
 #include "CuTest.h"
-#include "safe.h"
+#include "support.h"
 
 void
 test_strtocard(CuTest* tc)
@@ -39,13 +39,34 @@ test_asprintf(CuTest* tc)
 	CuAssertStrEquals(tc, "a=42", result);
 }
 
+void
+test_string(CuTest* tc)
+{
+	string_t s;
+	string_init(&s, "hello");
+	string_write(", ", 1, 2, &s);
+	string_append(&s, "world!");
+	CuAssertStrEquals(tc, "hello, world!", s.ptr);
+
+	string_appendf(&s, " The answer is %d.",  42);
+	CuAssertStrEquals(tc, "hello, world! The answer is 42.", s.ptr);
+}
+
+void
+test_short_program_name(CuTest* tc)
+{
+	CuAssertStrEquals(tc, "all-tests", short_program_name());
+}
+
 CuSuite*
-cu_safe_suite(void)
+cu_support_suite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
 	SUITE_ADD_TEST(suite, test_strtocard);
 	SUITE_ADD_TEST(suite, test_asprintf);
+	SUITE_ADD_TEST(suite, test_string);
+	SUITE_ADD_TEST(suite, test_short_program_name);
 
 	return suite;
 }

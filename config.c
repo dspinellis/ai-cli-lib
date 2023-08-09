@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "config.h"
-#include "safe.h"
+#include "support.h"
 #include "ini.h"
 
 bool verbose;
@@ -43,9 +43,6 @@ const char config_name[] = ".airlconfig";
 const char prompt_prefix[] = "prompt-";
 const char user_prefix[] = "user-";
 const char assistant_prefix[] = "assistant-";
-
-// Used for declarations that should be static but aren't for unit testing
-#define STATIC
 
 // Return true if the specified string starts with the given prefix
 STATIC bool
@@ -112,8 +109,10 @@ config_handler(void* user, const char* section, const char* name,
 		} \
 	} while(0);
 
-	MATCH(api, endpoint, safe_strdup(value));
-	MATCH(api, key, safe_strdup(value));
+	MATCH(openai, endpoint, safe_strdup(value));
+	MATCH(openai, key, safe_strdup(value));
+	MATCH(openai, model, safe_strdup(value));
+	MATCH(openai, temperature, atof(value));
 	MATCH(binding, vi, safe_strdup(value));
 	MATCH(binding, emacs, safe_strdup(value));
 	MATCH(prompt, context, strtocard(value));

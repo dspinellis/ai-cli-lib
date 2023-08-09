@@ -3,8 +3,8 @@
 #include "CuTest.h"
 
 CuSuite* cu_config_suite();
-CuSuite* cu_json_suite();
-CuSuite* cu_safe_suite();
+CuSuite* cu_fetch_openai_suite();
+CuSuite* cu_support_suite();
 
 void
 run_all_tests(void)
@@ -13,8 +13,8 @@ run_all_tests(void)
 	CuSuite* suite = CuSuiteNew();
 
 	CuSuiteAddSuite(suite, cu_config_suite());
-	CuSuiteAddSuite(suite, cu_json_suite());
-	CuSuiteAddSuite(suite, cu_safe_suite());
+	CuSuiteAddSuite(suite, cu_fetch_openai_suite());
+	CuSuiteAddSuite(suite, cu_support_suite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

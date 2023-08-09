@@ -1,9 +1,7 @@
 /*-
  *
  *  ai-readline - readline wrapper to obtain a generative AI suggestion
- *  Safe memory allocation and other functions.
- *  The allocation functions exit the program with an error messge
- *  if allocation fails.
+ *  Configuration parsing and access
  *
  *  Copyright 2023 Diomidis Spinellis
  *
@@ -20,9 +18,8 @@
  *  limitations under the License.
  */
 
-int safe_asprintf(char **strp, const char *fmt, ...);
-void *safe_calloc(size_t nmemb, size_t size);
-void *safe_malloc(size_t size);
-void *safe_realloc(void *ptr, size_t size);
-char *safe_strdup(const char *s);
-int strtocard(const char *string);
+#include "config.h"
+
+char *get_response_content(const char *json_response);
+int openai_init(config_t *config);
+char *openai_fetch(config_t *config, const char *prompt, int history_length);

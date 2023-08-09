@@ -29,6 +29,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "support.h"
 
 // Exit with a failure if result_ok is false
 static void
@@ -100,4 +101,71 @@ strtocard(const char *string)
 	if (errno != 0 || *endptr != '\0' || value < 0)
 		return -1;
 	return (int)value;
+}
+
+// Initialize s as the specified string
+void
+string_init(string_t *s, const char *value)
+{
+
+	s->len = strlen(value);
+	s->ptr = safe_malloc(s->len + 1);
+	strcpy(s->ptr, value);
+}
+
+// Write result data into string s
+size_t
+string_write(void *data, size_t size, size_t nmemb, string_t *s)
+{
+	size_t bytes = size * nmemb;
+	size_t new_len = s->len + bytes;
+	s->ptr = safe_realloc(s->ptr, new_len + 1);
+	memcpy(s->ptr + s->len, data, bytes);
+	s->ptr[new_len] = '\0';
+	s->len = new_len;
+
+	return bytes;
+}
+
+// Append specified data to the string
+size_t
+string_append(string_t *s, const char *data)
+{
+	size_t bytes = strlen(data);
+	size_t new_len = s->len + bytes;
+	s->ptr = safe_realloc(s->ptr, new_len + 1);
+	memcpy(s->ptr + s->len, data, bytes);
+	s->ptr[new_len] = '\0';
+	s->len = new_len;
+
+	return bytes;
+}
+
+// Append printf(3)-style formatted output to string
+int
+string_appendf(string_t *s, const char *fmt, ...)
+{
+	int result;
+	va_list args;
+
+	va_start(args, fmt);
+	char *strp;
+	result = vasprintf(&strp, fmt, args);
+	va_end(args);
+
+	verify(result != -1);
+
+	string_append(s, strp);
+	free(strp);
+
+	return result;
+}
+
+// Return the short name of the program being used
+const char *
+short_program_name(void)
+{
+	// GNU libc-specific
+	extern char *program_invocation_short_name;
+	return program_invocation_short_name;
 }
