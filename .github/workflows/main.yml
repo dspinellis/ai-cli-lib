@@ -23,7 +23,7 @@ jobs:
       run: sudo apt-get install libcurl4 libcurl4-openssl-dev libjansson4 libjansson-dev libreadline-dev
 
     - name: Make
-      run: make
+      run: make -C src
 
     - name: Test
-      run: make unit-test
+      run: make -C src unit-test

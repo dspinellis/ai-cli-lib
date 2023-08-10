@@ -24,6 +24,7 @@ the following packages are required:
 Package names may be different on other systems.
 
 ```
+cd src
 make
 ```
 
@@ -37,6 +38,8 @@ make unit-test
 ## Install
 
 ```
+cd src
+
 # Global installation
 sudo make install
 
@@ -69,8 +72,8 @@ make install PREFIX=~
 
 The _ai-cli_ reference documentation is provided as Unix manual
 pages.
-* [ai-cli(7) — library](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-cli%2Fmain%2Fai_cli.7&name=ai_cli(7)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-cli)
-* [ai-cli(5) — configuration](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-cli%2Fmain%2Fai_cli.5&name=ai_cli(5)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-cli)
+* [ai-cli(7) — library](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-cli%2Fmain%2Fsrc%2Fai_cli.7&name=ai_cli(7)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-cli)
+* [ai-cli(5) — configuration](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-cli%2Fmain%2Fsrc%2Fai_cli.5&name=ai_cli(5)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-cli)
 
 
 ## Contribute
@@ -80,8 +83,8 @@ Before working on something substantial,
 open an issue to signify your interest and coordinate with others.
 Particular useful are:
 * prompts for systems not yet supported
-  (see the [ai-cli-config](ai-cli-config) file),
+  (see the [ai-cli-config](src/ai-cli-config) file),
 * support for other large language models
-  (start from the [openai_fetch.c](openai_fetch.c) file),
+  (start from the [OpenAI_fetch.c](src/openai_fetch.c) file),
 * support for other libraries (mainly [libedit](http://cvsweb.netbsd.org/bsdweb.cgi/src/lib/libedit/)),
 * ports to other platforms, such as macOS.

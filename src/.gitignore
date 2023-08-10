@@ -1,5 +1,6 @@
-ai_cli.so
 .aicliconfig
+ai-cli.log
+ai_cli.so
 all-tests
 all_tests
 eg.py
