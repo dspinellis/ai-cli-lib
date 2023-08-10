@@ -1,6 +1,6 @@
 ![Build Status](https://img.shields.io/github/actions/workflow/status/dspinellis/ai-readline/main.yml?branch=main)
 
-# AI Readline: AI enhancement for interactive command-line programs
+# ai-readline: AI help for CLI programs
 The __ai_readline__
 library detects programs that offer interactive command-line editing
 through the __readline__ library,
@@ -66,8 +66,8 @@ make install PREFIX=~
 
 The _ai-readline_ reference documentation is provided as Unix manual
 pages.
-* [ai-readline(7) — library](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-readline%2Fmain%2Fai-readline.7&name=ai-readline(1)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2ai-readline).
-* [ai-readline(5) — configuration](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-readline%2Fmain%2Fai-readline.5&name=ai-readline(1)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2ai-readline).
+* [ai-readline(7) — library](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-readline%2Fmain%2Fai_readline.7&name=ai_readline(7)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-readline)
+* [ai-readline(5) — configuration](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-readline%2Fmain%2Fai_readline.5&name=ai_readline(5)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-readline)
 
 
 ## Contribute
