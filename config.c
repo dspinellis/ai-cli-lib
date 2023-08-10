@@ -31,7 +31,7 @@
 
 bool verbose;
 
-const char config_name[] = ".airlconfig";
+const char hidden_config_name[] = ".airlconfig";
 
 /*
  * Prefixes for providing n-shot user and assistant prompts
@@ -171,11 +171,16 @@ read_config(config_t *config)
 	char *home_dir;
 	if ((home_dir = getenv("HOME")) != NULL) {
 		char *home_config;
-		safe_asprintf(&home_config, "%s/%s", home_dir, config_name);
+
+		safe_asprintf(&home_config, "%s/%s", home_dir, "share/ai-readline/config");
+		ini_checked_parse(home_config, config_handler, &config);
+		free(home_config);
+
+		safe_asprintf(&home_config, "%s/%s", home_dir, hidden_config_name);
 		ini_checked_parse(home_config, config_handler, &config);
 		free(home_config);
 	}
 
 	// .airlconfig
-	ini_checked_parse(config_name, config_handler, config);
+	ini_checked_parse(hidden_config_name, config_handler, config);
 }
