@@ -1,6 +1,6 @@
 /*-
  *
- *  ai-readline - readline wrapper to obtain a generative AI suggestion
+ *  ai_readline - readline wrapper to obtain a generative AI suggestion
  *
  *  Copyright 2023 Diomidis Spinellis
  *
@@ -32,7 +32,7 @@
 
 /*
  * Dynamically obtained pointer to readline(3) variables..
- * This avoids an undefined symbol errors when a program isn't linked with
+ * This avoids a undefined symbol errors when a program isn't linked with
  * readline.
  */
 static char **rl_line_buffer_ptr;
