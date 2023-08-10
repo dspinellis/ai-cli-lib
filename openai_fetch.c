@@ -98,14 +98,15 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 
 	struct string json_request;
 	string_init(&json_request, "{\n");
-	string_appendf(&json_request, "  \"model\": \"%s\",\n",
-	    config->openai_model);
+	string_appendf(&json_request, "  \"model\": %s,\n",
+	    json_escape(config->openai_model));
 	string_appendf(&json_request, "  \"temperature\": %g,\n",
 	    config->openai_temperature);
 
 	string_append(&json_request, "  \"messages\": [\n");
 	string_appendf(&json_request,
-	    "    {\"role\": \"system\", \"content\": \"%s\"},\n", system_role);
+	    "    {\"role\": \"system\", \"content\": %s},\n",
+	    json_escape(system_role));
 
 
 	// Add user and assistant n-shot prompts
@@ -113,12 +114,12 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	for (int i = 0; uaprompts && i < NPROMPTS; i++) {
 		if (uaprompts->user[i])
 			string_appendf(&json_request,
-			    "    {\"role\": \"user\", \"content\": \"%s\"},\n",
-			    uaprompts->user[i]);
+			    "    {\"role\": \"user\", \"content\": %s},\n",
+			    json_escape(uaprompts->user[i]));
 		if (uaprompts->assistant[i])
 			string_appendf(&json_request,
-			    "    {\"role\": \"assistant\", \"content\": \"%s\"},\n",
-			    uaprompts->assistant[i]);
+			    "    {\"role\": \"assistant\", \"content\": %s},\n",
+			    json_escape(uaprompts->assistant[i]));
 	}
 
 	// Add history prompts as context
@@ -127,13 +128,13 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 		if (h == NULL)
 			continue;
 		string_appendf(&json_request,
-		    "    {\"role\": \"user\", \"content\": \"%s\"},\n",
-		    h->line);
+		    "    {\"role\": \"user\", \"content\": %s},\n",
+		    json_escape(h->line));
 	}
 
 	// Finally, add the user prompt
 	string_appendf(&json_request,
-	    "    {\"role\": \"user\", \"content\": \"%s\"}\n", prompt);
+	    "    {\"role\": \"user\", \"content\": %s}\n", json_escape(prompt));
 	string_append(&json_request, "  ]\n}\n");
 
 	if (logfile)

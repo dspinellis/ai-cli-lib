@@ -29,6 +29,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <readline/readline.h>
+#include <jansson.h>
 
 #include "support.h"
 
@@ -186,5 +187,25 @@ readline_printf(const char *fmt, ...)
 	rl_on_new_line();
 	rl_redisplay();
 
+	return result;
+}
+
+/*
+ * Return the string suitably escaped for JSON.
+ * Each new call frees the previously allocated values.
+ */
+char *
+json_escape(const char *s)
+{
+	static json_t *string;
+	static char *result;
+
+	if (string)
+		json_decref(string);
+	if (result)
+		free(result);
+
+	string = json_string(s);
+	result = json_dumps(string, JSON_ENCODE_ANY);
 	return result;
 }

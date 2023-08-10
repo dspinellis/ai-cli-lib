@@ -38,6 +38,8 @@ typedef struct string {
     size_t len;
 } string_t;
 
+
+char *json_escape(const char *s);
 int readline_printf(const char *fmt, ...);
 void string_init(string_t *s, const char *value);
 size_t string_write(void *data, size_t size, size_t nmemb, string_t *s);

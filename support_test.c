@@ -58,6 +58,13 @@ test_short_program_name(CuTest* tc)
 	CuAssertStrEquals(tc, "all-tests", short_program_name());
 }
 
+void
+test_json_escape(CuTest* tc)
+{
+	CuAssertStrEquals(tc, "\"a \\\" (quote) and a \\\\ (backslash)\"", json_escape("a \" (quote) and a \\ (backslash)"));
+}
+
+
 CuSuite*
 cu_support_suite(void)
 {
@@ -67,6 +74,7 @@ cu_support_suite(void)
 	SUITE_ADD_TEST(suite, test_asprintf);
 	SUITE_ADD_TEST(suite, test_string);
 	SUITE_ADD_TEST(suite, test_short_program_name);
+	SUITE_ADD_TEST(suite, test_json_escape);
 
 	return suite;
 }
