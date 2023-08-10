@@ -63,6 +63,8 @@ query_ai(int count, int key)
 	    *history_length_ptr);
 	if (!response)
 		return -1;
+	rl_crlf();
+	rl_on_new_line();
 	rl_begin_undo_group();
 	rl_delete_text(0, *rl_end_ptr);
 	*rl_point_ptr = 0;
