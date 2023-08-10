@@ -80,4 +80,5 @@ Particular useful are:
   (see the [ai-cli-config](ai-cli-config) file),
 * support for other large language models
   (start from the [openai_fetch.c](openai_fetch.c) file),
+* support for other libraries (mainly [libedit](http://cvsweb.netbsd.org/bsdweb.cgi/src/lib/libedit/),
 * ports to other platforms, such as macOS.
