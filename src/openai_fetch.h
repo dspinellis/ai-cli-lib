@@ -1,7 +1,7 @@
 /*-
  *
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
- *  Configuration parsing and access
+ *  OpenAI access function
  *
  *  Copyright 2023 Diomidis Spinellis
  *
