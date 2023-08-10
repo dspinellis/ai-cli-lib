@@ -109,6 +109,7 @@ config_handler(void* user, const char* section, const char* name,
 		} \
 	} while(0);
 
+	MATCH(general, logfile, safe_strdup(value));
 	MATCH(openai, endpoint, safe_strdup(value));
 	MATCH(openai, key, safe_strdup(value));
 	MATCH(openai, model, safe_strdup(value));

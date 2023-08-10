@@ -34,6 +34,7 @@ typedef struct uaprompt {
 } *uaprompt_t;
 
 typedef struct {
+	const char *general_logfile;	// File to log requests and responses
 	const char *openai_endpoint;	// API endpoint URL
 	const char *openai_key;		// API key
 	const char *openai_model;	// Model to use (e.g. gpt-3.5)

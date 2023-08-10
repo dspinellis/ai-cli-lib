@@ -12,6 +12,7 @@ static CURL *curl;
 static char *authorization;
 static char *system_role;
 static const char *program_name;
+static FILE *logfile;
 
 // Return the response content from an OpenAI JSON response
 STATIC char *
@@ -40,6 +41,8 @@ get_response_content(const char *json_response)
 int
 openai_init(config_t *config)
 {
+	if (config->general_logfile)
+		logfile = fopen(config->general_logfile, "a");
 	program_name = short_program_name();
 	safe_asprintf(&authorization, "Authorization: Bearer %s", config->openai_key);
 	safe_asprintf(&system_role, config->prompt_system, program_name);
@@ -106,8 +109,9 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	    "    {\"role\": \"user\", \"content\": \"%s\"}\n", prompt);
 	string_append(&json_request, "  ]\n}\n");
 
+	if (logfile)
+		fputs(json_request.ptr, logfile);
 
-	// printf("%s", json_request.ptr);
 	curl_easy_setopt(curl, CURLOPT_URL, config->openai_endpoint);
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, string_write);
@@ -119,6 +123,9 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	if (res != CURLE_OK)
 	    fprintf(stderr, "OpenAI API call failed: %s\n",
 		    curl_easy_strerror(res));
+
+	if (logfile)
+		fputs(json_response.ptr, logfile);
 
 	char *text_response = get_response_content(json_response.ptr);
 	free(json_request.ptr);
