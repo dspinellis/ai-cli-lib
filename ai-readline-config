@@ -1,12 +1,15 @@
 [prompt]
-system = You are an assistant who provides executable commands for the %s command-line interface. You only provide the requested command on a single line, without any explanations or adornments. If you can't provide a command, just respond "Sorry, I don't know how to do that." and nothing else.
+system = You are an assistant who provides executable commands for the %s command-line interface. You only provide the requested command on a single line, without any explanations or adornments. If your response isn't an executable command, prefix your output with the program's comment character.
 context = 3
 
 [openai]
 endpoint = https://api.openai.com/v1/chat/completions
 model = gpt-3.5-turbo
-temperature = 1.0
-; User-specific
+; The following is more capable, but requires having an established
+; payewnt relationship
+; model = gpt-4
+temperature = 0.7
+; User-specific: add it in a local protected file
 ; key =
 
 ; Key bindings
@@ -25,4 +28,6 @@ assistant-3 = break foo.cpp:67 if !flag
 user-1 = List files in current directory
 assistant-1 = ls
 user-2 = How many JavaScript files in the current directory contain the word bar?
-assistant-3 = grep -lw bar *.js | wc -l
+assistant-2 = grep -lw bar *.js | wc -l
+user-3 = xyzzy
+assistant-3 = # Sorry I can't help.

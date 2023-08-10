@@ -21,15 +21,27 @@ get_response_content(const char *json_response)
 	json_error_t error;
 	json_t *root = json_loads(json_response, 0, &error);
 	if (!root) {
-	    fprintf(stderr, "error: on line %d: %s\n", error.line, error.text);
-	    return NULL;
+		readline_printf("\nOpenAI JSON error: on line %d: %s\n", error.line, error.text);
+		return NULL;
 	}
-	json_t *choices = json_object_get(root, "choices");
-	json_t *first_choice = json_array_get(choices, 0);
-	json_t *message = json_object_get(first_choice, "message");
-	json_t *content = json_object_get(message, "content");
 
-	char *ret = safe_strdup(json_string_value(content));
+	char *ret;
+	json_t *choices = json_object_get(root, "choices");
+	if (choices) {
+		json_t *first_choice = json_array_get(choices, 0);
+		json_t *message = json_object_get(first_choice, "message");
+		json_t *content = json_object_get(message, "content");
+		ret = safe_strdup(json_string_value(content));
+	} else {
+		json_t *error = json_object_get(root, "error");
+		if (error) {
+			json_t *message = json_object_get(error, "message");
+			readline_printf("\nOpenAI API invocation error: %s\n", json_string_value(message));
+		} else
+			readline_printf("\nOpenAI API invocation error: %s\n", json_response);
+		ret = NULL;
+	}
+
 	json_decref(root);
 	return ret;
 }
@@ -120,9 +132,12 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 
 	res = curl_easy_perform(curl);
 
-	if (res != CURLE_OK)
-	    fprintf(stderr, "OpenAI API call failed: %s\n",
+	if (res != CURLE_OK) {
+		free(json_request.ptr);
+		readline_printf("OpenAI API call failed: %s\n",
 		    curl_easy_strerror(res));
+		return NULL;
+	}
 
 	if (logfile)
 		fputs(json_response.ptr, logfile);

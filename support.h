@@ -38,6 +38,7 @@ typedef struct string {
     size_t len;
 } string_t;
 
+int readline_printf(const char *fmt, ...);
 void string_init(string_t *s, const char *value);
 size_t string_write(void *data, size_t size, size_t nmemb, string_t *s);
 size_t string_append(string_t *s, const char *data);

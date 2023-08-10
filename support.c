@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
+#include <readline/readline.h>
 
 #include "support.h"
 
@@ -168,4 +169,22 @@ short_program_name(void)
 	// GNU libc-specific
 	extern char *program_invocation_short_name;
 	return program_invocation_short_name;
+}
+
+// Show a message during readline processing
+int
+readline_printf(const char *fmt, ...)
+{
+	int result;
+	va_list args;
+
+	va_start(args, fmt);
+	rl_save_prompt();
+	result = vprintf(fmt, args);
+	va_end(args);
+	rl_restore_prompt();
+	rl_on_new_line();
+	rl_redisplay();
+
+	return result;
 }

@@ -53,12 +53,16 @@ query_ai(int count, int key)
 {
 	static char *prev_response;
 
-	if (prev_response)
+	if (prev_response) {
 		free(prev_response);
+		prev_response = NULL;
+	}
 
 	add_history(*rl_line_buffer_ptr);
 	char *response = openai_fetch(&config, *rl_line_buffer_ptr,
 	    *history_length_ptr);
+	if (!response)
+		return -1;
 	rl_begin_undo_group();
 	rl_delete_text(0, *rl_end_ptr);
 	*rl_point_ptr = 0;
