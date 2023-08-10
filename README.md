@@ -88,3 +88,7 @@ Particular useful are:
   (start from the [OpenAI_fetch.c](src/openai_fetch.c) file),
 * support for other libraries (mainly [libedit](http://cvsweb.netbsd.org/bsdweb.cgi/src/lib/libedit/)),
 * ports to other platforms, such as macOS.
+
+## See also
+* [edX open online course on Unix tools for data, software, and production engineering](https://www.spinellis.gr/unix/?ai-cli)
+* Diomidis Spinellis. AI Everywhere. _IEEE Software_ 40(6), November/December 2023.
