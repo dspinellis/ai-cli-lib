@@ -1,6 +1,6 @@
 /*-
  *
- *  ai_readline - readline wrapper to obtain a generative AI suggestion
+ *  ai_cli - readline wrapper to obtain a generative AI suggestion
  *
  *  Copyright 2023 Diomidis Spinellis
  *
@@ -101,7 +101,7 @@ setup(void)
 	read_config(&config);
 
 	if (!config.prompt_system) {
-		fprintf(stderr, "No default ai-readline configuration loaded.  Installation problem?\n");
+		fprintf(stderr, "No default ai-cli configuration loaded.  Installation problem?\n");
 		return;
 	}
 

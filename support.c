@@ -1,6 +1,6 @@
 /*-
  *
- *  ai-readline - readline wrapper to obtain a generative AI suggestion
+ *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Safe memory allocation and other functions.
  *  The allocation functions exit the program with an error messge
  *  if allocation fails.
@@ -37,7 +37,7 @@ static void
 verify(bool result_ok)
 {
 	if (!result_ok) {
-		fprintf(stderr, "ai_readline: memory allocation failed.\n");
+		fprintf(stderr, "ai_cli: memory allocation failed.\n");
 		exit(EXIT_FAILURE);
 	}
 }

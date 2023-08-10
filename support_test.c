@@ -1,6 +1,6 @@
 /*-
  *
- *  ai-readline - readline wrapper to obtain a generative AI suggestion
+ *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Safe memory allocation and other functions.
  *
  *  Copyright 2023 Diomidis Spinellis

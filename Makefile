@@ -3,11 +3,11 @@
 PREFIX ?= /usr/local
 LIBPREFIX ?= "$(PREFIX)/lib"
 MANPREFIX ?= "$(PREFIX)/share/man/"
-SHAREPREFIX ?= "$(PREFIX)/share/ai-readline"
+SHAREPREFIX ?= "$(PREFIX)/share/ai-cli"
 
-SHARED_LIB=ai_readline.so
+SHARED_LIB=ai_cli.so
 PROGS=rl_driver $(SHARED_LIB)
-RL_SRC=ai_readline.c config.c ini.c openai_fetch.c support.c
+RL_SRC=ai_cli.c config.c ini.c openai_fetch.c support.c
 TEST_SRC=$(wildcard *_test.c)
 LIB=-lcurl -ljansson
 
@@ -43,7 +43,7 @@ unit-test: all-tests # Help: Run unit tests
 clean: # Help: Remove generated files
 	rm -f $(PROGS) all-tests
 
-install: ai_readline.so # Help: Install library and manual pages
+install: ai_cli.so # Help: Install library and manual pages
 	@mkdir -p $(DESTDIR)$(MANPREFIX)/man5
 	@mkdir -p $(DESTDIR)$(MANPREFIX)/man7
 	@mkdir -p $(DESTDIR)$(LIBPREFIX)
@@ -51,7 +51,7 @@ install: ai_readline.so # Help: Install library and manual pages
 	install $(SHARED_LIB) $(DESTDIR)$(LIBPREFIX)/
 	install -m 644 ai_readlib.5 $(DESTDIR)$(MANPREFIX)/man5
 	install -m 644 ai_readlib.7 $(DESTDIR)$(MANPREFIX)/man7
-	install -m 644 ai-readline-config $(DESTDIR)$(SHAREPREFIX)/config
+	install -m 644 ai-cli-config $(DESTDIR)$(SHAREPREFIX)/config
 
 help: # Help: Show this help message
 	@echo 'The following make targets are available.'

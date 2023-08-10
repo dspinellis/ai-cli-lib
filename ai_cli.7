@@ -2,7 +2,7 @@
  \" nroff -*
 
 .SH NAME
-.B ai_readline
+.B ai_cli
 \- AI enhancement for interactive command-line programs
 
 .SH SYNOPSIS
@@ -10,7 +10,7 @@ Set the
 .B LD_PRELOAD
 environment variable to load the library using its full path.
 Obtain your OpenAI API key and configure it in the
-.B .airlconfig
+.B .aicliconfig
 file.
 Run the interactive command-line programs, such as
 .BR bash ,
@@ -32,7 +32,7 @@ key bindings.
 
 .SH DESCRIPTION
 The
-.B ai_readline
+.B ai_cli
 library detects programs that link against
 .BR readline (3)
 and modifies their interface to allow obtaining help from OpenAI's
@@ -60,11 +60,11 @@ is as follows.
 
 Bash, Ksh and the traditional Bourne shell:
 
-export LD_PRELOAD=/usr/lib/ai_readline.so
+export LD_PRELOAD=/usr/lib/ai_cli.so
 
 C Shell:
 
-setenv LD_PRELOAD=/usr/lib/ai_readline.so
+setenv LD_PRELOAD=/usr/lib/ai_cli.so
 
 The setting can be made permanent by adding the command
 to a shell's configuration file, such as
@@ -73,32 +73,32 @@ to a shell's configuration file, such as
 .BR .cshrc .
 
 The operation of
-.B ai_readline
+.B ai_cli
 can be configured through the files 
 listed in the
 .I FILES
 section and the format documented in
-.BR ai_readline (5).
+.BR ai_cli (5).
 
 .SH BUGS
-.B ai_readline
+.B ai_cli
 will not work with programs that are linked statically with
 .BR readline (3)
 rather than using it as a shared library object.
 
 .SH FILES
-.IR /usr/share/ai-readline/config ,
-.IR /usr/local/share/ai-readline/config ,
-.IR ai-readline-config ,
-.IR $HOME/share/ai-readline/config ,
-.IR $HOME/.airlconfig ,
-.I .airlconfig
+.IR /usr/share/ai-cli/config ,
+.IR /usr/local/share/ai-cli/config ,
+.IR ai-cli-config ,
+.IR $HOME/share/ai-cli/config ,
+.IR $HOME/.aicliconfig ,
+.I .aicliconfig
 \- locations searched for
-.B ai_readline
+.B ai_cli
 configuration files.
 
 .SH SEE ALSO
-.BR ai_readline (5).
+.BR ai_cli (5).
 
 .SH AUTHOR
 Diomidis Spinellis (dds@aueb.gr)

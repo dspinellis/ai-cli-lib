@@ -1,5 +1,5 @@
-ai_readline.so
-.airlconfig
+ai_cli.so
+.aicliconfig
 all-tests
 all_tests
 eg.py

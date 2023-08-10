@@ -1,4 +1,4 @@
-name: ai-readline CI
+name: ai-cli CI
 
 on:
   push:

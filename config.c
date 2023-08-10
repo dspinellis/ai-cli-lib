@@ -1,6 +1,6 @@
 /*-
  *
- *  ai-readline - readline wrapper to obtain a generative AI suggestion
+ *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Configuration parsing and access
  *
  *  Copyright 2023 Diomidis Spinellis
@@ -31,7 +31,7 @@
 
 bool verbose;
 
-const char hidden_config_name[] = ".airlconfig";
+const char hidden_config_name[] = ".aicliconfig";
 
 /*
  * Prefixes for providing n-shot user and assistant prompts
@@ -164,16 +164,16 @@ ini_checked_parse(const char* filename, ini_handler handler, void* user)
 void
 read_config(config_t *config)
 {
-	ini_checked_parse("/usr/share/ai-readline/config", config_handler, config);
-	ini_checked_parse("/usr/local/share/ai-readline/config", config_handler, config);
-	ini_checked_parse("ai-readline-config", config_handler, config);
+	ini_checked_parse("/usr/share/ai-cli/config", config_handler, config);
+	ini_checked_parse("/usr/local/share/ai-cli/config", config_handler, config);
+	ini_checked_parse("ai-cli-config", config_handler, config);
 
-	// $HOME/.airlconfig
+	// $HOME/.aicliconfig
 	char *home_dir;
 	if ((home_dir = getenv("HOME")) != NULL) {
 		char *home_config;
 
-		safe_asprintf(&home_config, "%s/%s", home_dir, "share/ai-readline/config");
+		safe_asprintf(&home_config, "%s/%s", home_dir, "share/ai-cli/config");
 		ini_checked_parse(home_config, config_handler, &config);
 		free(home_config);
 
@@ -182,6 +182,6 @@ read_config(config_t *config)
 		free(home_config);
 	}
 
-	// .airlconfig
+	// .aicliconfig
 	ini_checked_parse(hidden_config_name, config_handler, config);
 }
