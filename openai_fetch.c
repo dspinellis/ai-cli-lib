@@ -4,6 +4,7 @@
 #include <curl/curl.h>
 #include <readline/history.h>
 #include <jansson.h>
+#include <dlfcn.h>
 
 #include "config.h"
 #include "support.h"
@@ -53,6 +54,15 @@ get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
+	if (!dlopen("libcurl.so", RTLD_NOW | RTLD_GLOBAL)) {
+		readline_printf("\nError loading libcurl.so: %s\n", dlerror());
+		return -1;
+	}
+	if (!dlopen("libjansson.so", RTLD_NOW | RTLD_GLOBAL)) {
+		readline_printf("\nError loading libjansson.so: %s\n", dlerror());
+		return -1;
+	}
+
 	if (config->general_logfile)
 		logfile = fopen(config->general_logfile, "a");
 	program_name = short_program_name();

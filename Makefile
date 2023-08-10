@@ -29,7 +29,7 @@ rl_driver: rl_driver.c
 	cc rl_driver.c $(LIB) -lreadline -o $@
 
 $(SHARED_LIB): $(RL_SRC)
-	gcc -shared -fPIC $(CFLAGS) $(RL_SRC) -o $@ -ldl $(LIB)
+	gcc -shared -fPIC $(CFLAGS) $(RL_SRC) -o $@ -ldl
 
 e2e-test: $(PROGS) # Help: Invoke the library with a readline read/print loop
 	LD_PRELOAD=`pwd`/$(SHARED_LIB) ./rl_driver
