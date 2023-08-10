@@ -1,0 +1,29 @@
+name: ai-readline CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies (Ubuntu)
+      if: runner.os == 'Linux'
+      run: sudo apt-get install libcurl4 libcurl4-openssl-dev libjansson4 libjansson-dev libreadline-dev
+
+    - name: Make
+      run: make
+
+    - name: Test
+      run: make unit-test
