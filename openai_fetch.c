@@ -50,8 +50,8 @@ get_response_content(const char *json_response)
  * Initialize OpenAI connection
  * Return 0 on success -1 on error
  */
-int
-openai_init(config_t *config)
+static int
+initialize(config_t *config)
 {
 	if (config->general_logfile)
 		logfile = fopen(config->general_logfile, "a");
@@ -61,6 +61,8 @@ openai_init(config_t *config)
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 
 	curl = curl_easy_init();
+	if (!curl)
+		readline_printf("\nCURL initialization failed.\n");
 	return curl ? 0 : -1;
 }
 
@@ -73,6 +75,9 @@ char *
 openai_fetch(config_t *config, const char *prompt, int history_length)
 {
 	CURLcode res;
+
+	if (!curl && initialize(config) < 0)
+		return NULL;
 
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -134,7 +139,7 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 
 	if (res != CURLE_OK) {
 		free(json_request.ptr);
-		readline_printf("OpenAI API call failed: %s\n",
+		readline_printf("\nOpenAI API call failed: %s\n",
 		    curl_easy_strerror(res));
 		return NULL;
 	}

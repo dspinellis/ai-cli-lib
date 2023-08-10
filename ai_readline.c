@@ -110,11 +110,6 @@ setup(void)
 		return;
 	}
 
-	if (openai_init(&config) < 0) {
-		fprintf(stderr, "Fetch initialization failed.\n");
-		return;
-	}
-
 	// Add named function, making it available to the user
 	rl_add_defun("query-ai", query_ai, -1);
 

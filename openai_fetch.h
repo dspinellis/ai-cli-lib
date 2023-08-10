@@ -21,5 +21,4 @@
 #include "config.h"
 
 char *get_response_content(const char *json_response);
-int openai_init(config_t *config);
 char *openai_fetch(config_t *config, const char *prompt, int history_length);
