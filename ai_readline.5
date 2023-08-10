@@ -1,0 +1,184 @@
+.TH AI_READLINE 5 "2023-08-10" "Diomidis Spinellis" \" -*-
+ \" nroff -*
+
+.SH NAME
+.B ai_readline
+\- Configuration file format
+
+.SH SYNOPSIS
+The operation of
+.BR ai_readline (7)
+is controlled by ini-style
+configuration files
+searched in the order specified in the
+.I FILES
+section of library's manual page.
+
+.SH DESCRIPTION
+Configuration files are searched and loaded in the specified order.
+Entries in configuration files read later can override previous ones.
+In general, system-wide configuration files are used to specify
+default behaviors,
+while user configuration files are used for individual tailoring,
+such as the specification of the API key or prompts for commands
+that are not supported by default.
+
+The following sections describe the supported contents of each
+configuration file section.
+All section names and options are specified in lowercase.
+
+.SH [PROMPT] SECTION OPTION
+.PP
+\fIsystem=\fR
+.RS 4
+The system prompt specifying to context through which the
+LLM prompting is made.
+A single
+.I %s
+sequence is replaced when the prompt is sent out as an API request
+by the name of the command being executed
+(e.g.
+.IR mysql ).
+.RE
+
+.PP
+\fIcontext=\fR
+.RS 4
+The number of previous commands that will be provided as context.
+More context can provide better responses,
+but also increases the operation's cost.
+.RE
+
+.SH [BINDING] SECTION OPTIONS
+.PP
+\fIvi=\fR
+.RS 4
+The single-letter vi movement key on which the AI help is bound.
+It can be used when vi key bindings are in effect.
+.RE
+
+.PP
+\fIemacs=\fR
+.RS 4
+The Emacs key sequence on which the AI help is bound.
+It is specified using
+.BR readline (5)
+format.
+It can be used when Emacs key bindings are in effect.
+.RE
+
+.SH [OPENAI] SECTION OPTIONS
+These options tailor the behavior of the OpenAI
+queries.
+Refer to the 
+.UR "https://platform.openai.com/docs/models"
+OpenAI API documentation
+.UE
+for more details.
+
+.PP
+\fIendpoint=\fR
+.RS 4
+The URL of the API endpoint.
+.RE
+.PP
+\fImodel=\fR
+.RS 4
+The OpenAI model to use, e.g.
+.IR gpt-3.5-turbo .
+This affects performance and pricing.
+.RE
+
+.PP
+\fItemperature=\fR
+.RS 4
+The sampling temperature to use as a value between 0 and 2.
+Higher values, such as 0.8, will make the output more random,
+while lower values, such as 0.2, will make it more focused and deterministic.
+.RE
+
+.PP
+\fIkey=\fR
+.RS 4
+OpenAI API access key.
+Ensure this is specified in a configuration file that is not readable
+by entities unauthorized to make OpenAI API requests with the given key.
+.RE
+
+.SH [PROMPT-] SECTION OPTIONS
+A series of sections starting with
+.B prompt-
+followed by the name of a program,
+such as
+.B bash
+or
+.B mysql
+are used to provide multishot example prompts
+for improving the obtained responses.
+These are provided by
+.B ai_readline
+at the beginning of each API request.
+
+.PP
+\fIuser-n=\fR
+.RS 4
+A user prompt in natural language.
+The \fIn\fP placeholder can take values 1-3.
+.RE
+
+.PP
+\fIassistant-n=\fR
+.RS 4
+The ideal response to the user prompt for the program being
+specified in the corresponding section.
+.RE
+
+.SH EXAMPLE
+.RS
+.nf
+[prompt]
+system = You're an assistant providing executable commands for %s.
+context = 3
+
+[openai]
+endpoint = https://api.openai.com/v1/chat/completions
+model = gpt-3.5-turbo
+temperature = 1.0
+key = sk-hjgds5hljfgs8dfw4ljghljfhfFER344FFFggf84fssddG4k
+
+[binding]
+vi = V
+emacs = \\C-xa
+
+[prompt-bash]
+user-1 = List files in current directory
+assistant-1 = ls
+user-2 = What is the current time and date?
+assistant-2 = date
+.RE
+.fi
+
+.SH FILES
+The names and order of configuration files are documented in
+.BR ai_readline (5).
+
+.SH SEE ALSO
+.BR ai_readline (5).
+
+.SH AUTHOR
+Diomidis Spinellis (dds@aueb.gr)
+
+.SH COPYRIGHT
+Copyright 2023 Diomidis Spinellis
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

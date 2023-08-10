@@ -1,0 +1,119 @@
+.TH AI_READLINE 7 "2023-08-10" "Diomidis Spinellis" \" -*-
+ \" nroff -*
+
+.SH NAME
+.B ai_readline
+\- AI enhancement for interactive command-line programs
+
+.SH SYNOPSIS
+Set the
+.B LD_PRELOAD
+environment variable to load the library using its full path.
+Obtain your OpenAI API key and configure it in the
+.B .airlconfig
+file.
+Run the interactive command-line programs, such as
+.BR bash ,
+.BR mysql , 
+.BR psql , 
+.BR gdb ,
+as you normally would.
+To obtain AI help,
+enter a prompt and press
+.B "^X-a"
+(Ctrl-X followed by a)
+in the (default)
+.B Emacs
+key binding mode or
+.B V
+if you have configured
+.B vi
+key bindings.
+
+.SH DESCRIPTION
+The
+.B ai_readline
+library detects programs that link against
+.BR readline (3)
+and modifies their interface to allow obtaining help from OpenAI's
+generative pre-trained transformer large language model (LLM).
+Specifically,
+it creates a
+.BR readline (3)
+function named
+.BR query_ai ,
+and binds it to (configurable)
+.BR Emacs
+and 
+.BR vi
+keys.
+When the corresponding key or key sequence is pressed,
+suitable prompts are sent to the OpenAI API endpoint,
+and the prompt is replaced with the obtained response.
+(The prompt is added in the command-line history for further editing.)
+The LLM query contains context from previous commmands
+(but not their output),
+which allows prompts to refine commands as needed.
+
+The syntax to force preload of the library according to the shell
+is as follows.
+
+Bash, Ksh and the traditional Bourne shell:
+
+export LD_PRELOAD=/usr/lib/ai_readline.so
+
+C Shell:
+
+setenv LD_PRELOAD=/usr/lib/ai_readline.so
+
+The setting can be made permanent by adding the command
+to a shell's configuration file, such as
+.BR .bashrc ,
+.BR zshrc ", or"
+.BR .cshrc .
+
+The operation of
+.B ai_readline
+can be configured through the files 
+listed in the
+.I FILES
+section and the format documented in
+.BR ai_readline (5).
+
+.SH BUGS
+.B ai_readline
+will not work with programs that are linked statically with
+.BR readline (3)
+rather than using it as a shared library object.
+
+.SH FILES
+.IR /usr/share/ai-readline/config ,
+.IR /usr/local/share/ai-readline/config ,
+.IR ai-readline-config ,
+.IR $HOME/share/ai-readline/config ,
+.IR $HOME/.airlconfig ,
+.I .airlconfig
+\- locations searched for
+.B ai_readline
+configuration files.
+
+.SH SEE ALSO
+.BR ai_readline (5).
+
+.SH AUTHOR
+Diomidis Spinellis (dds@aueb.gr)
+
+.SH COPYRIGHT
+Copyright 2023 Diomidis Spinellis
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
