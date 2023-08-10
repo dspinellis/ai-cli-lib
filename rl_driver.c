@@ -1,6 +1,6 @@
 /*-
  *
- *  rl-test - Simple readline caller
+ *  rl_driver - Simple readline caller
  *
  *  Copyright 2023 Diomidis Spinellis
  *
