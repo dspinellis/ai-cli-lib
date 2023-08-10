@@ -31,3 +31,11 @@ user-2 = How many JavaScript files in the current directory contain the word bar
 assistant-2 = grep -lw bar *.js | wc -l
 user-3 = xyzzy
 assistant-3 = # Sorry I can't help.
+
+[prompt-sqlite3]
+user-1 = Show available tables
+assistant-1 = .tables
+user-2 = Show average of grade in table students
+assistant-2 = SELECT AVG(grade) FROM students;
+user-3 = xyzzy
+assistant-3 = -- Sorry I can't help.
