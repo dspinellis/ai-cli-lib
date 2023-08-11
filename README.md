@@ -9,7 +9,7 @@ GPT large language model.
 Think of it as a command line copilot.
 
 
-![Demonstration](https://gist.githubusercontent.com/dspinellis/b25d9b3c3e6d6a6260774c32dc7be817/raw/dc36cc01806903dce0630642d3c662e02d16e7f1/ai-cli.gif)
+![Demonstration](https://gist.githubusercontent.com/dspinellis/b25d9b3c3e6d6a6260774c32dc7be817/raw/cc191580cd9aa94bb2a2471e1f43b75a49817b64/ai-cli.gif)
 
 ## Build
 The __ai_cli__
