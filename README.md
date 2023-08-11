@@ -29,14 +29,20 @@ make
 ```
 
 ## Test
-
+### Unit testing
 ```
 cd src
 make unit-test
 ```
 
-## Install
+### End-to-end testing
+```
+cd src
+make e2e-test
+```
+This will provide you a simple read-print loop where you can test the _ai_cli_ functionality.
 
+## Install
 ```
 cd src
 
@@ -48,7 +54,6 @@ make install PREFIX=~
 ```
 
 ## Run
-
 * Set the `LD_PRELOAD` environment variable to load the library using its
   full path.
   For example, under _bash_ run
@@ -69,7 +74,6 @@ make install PREFIX=~
 
 
 ## Reference documentation
-
 The _ai-cli_ reference documentation is provided as Unix manual
 pages.
 * [ai-cli(7) — library](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-cli%2Fmain%2Fsrc%2Fai_cli.7&name=ai_cli(7)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-cli)
@@ -77,7 +81,6 @@ pages.
 
 
 ## Contribute
-
 Contributions are welcomed through GitHub pull requests.
 Before working on something substantial,
 open an issue to signify your interest and coordinate with others.
