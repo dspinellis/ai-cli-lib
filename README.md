@@ -72,13 +72,11 @@ make install PREFIX=~
   in the (default) _Emacs_ key binding mode or `V` if you have configured
   _vi_ key bindings.
 
-
 ## Reference documentation
 The _ai-cli_ reference documentation is provided as Unix manual
 pages.
 * [ai-cli(7) — library](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-cli%2Fmain%2Fsrc%2Fai_cli.7&name=ai_cli(7)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-cli)
 * [ai-cli(5) — configuration](https://dspinellis.github.io/manview/?src=https%3A%2F%2Fraw.githubusercontent.com%2Fdspinellis%2Fai-cli%2Fmain%2Fsrc%2Fai_cli.5&name=ai_cli(5)&link=https%3A%2F%2Fgithub.com%2Fdspinellis%2Fai-cli)
-
 
 ## Contribute
 Contributions are welcomed through GitHub pull requests.
@@ -95,3 +93,9 @@ Particular useful are:
 ## See also
 * [edX open online course on Unix tools for data, software, and production engineering](https://www.spinellis.gr/unix/?ai-cli)
 * Diomidis Spinellis. AI Everywhere. _IEEE Software_ 40(6), November/December 2023.
+
+## Acknowledgements
+* API requests are made using [libcurl](https://curl.se/libcurl/)
+* The configuration file parsing is based on [inih](https://github.com/benhoyt/inih)
+* Unit testing uses [CuTest](https://github.com/ennorehling/cutest).
+* JSON is parsed using [Jansson](https://github.com/akheron/jansson/)
