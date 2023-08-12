@@ -13,7 +13,8 @@ Think of it as a command line copilot.
 
 ## Build
 The __ai_cli__
-library has been built and tested under Debian Linux.
+library has been built and tested under Debian Linux
+(natively under version 11 and the x86_64 and armv7l architectures and under Windows Subsystem for Linux version 2).
 In addition to _make_ and the GNU C library,
 the following packages are required:
 `libcurl4`
@@ -40,16 +41,17 @@ make unit-test
 cd src
 make e2e-test
 ```
-This will provide you a simple read-print loop where you can test the _ai_cli_ functionality.
+This will provide you a simple read-print loop where you can test the _ai_cli_ capability to
+link with the Readline API of third party programs.
 
 ## Install
 ```
 cd src
 
-# Global installation
+# Global installation for all users
 sudo make install
 
-# Local installation
+# Local installation for the currently logged-in user
 make install PREFIX=~
 ```
 
@@ -61,14 +63,14 @@ make install PREFIX=~
 * [Obtain your OpenAI API key](https://platform.openai.com/signup),
   and configure it in the `.aicliconfig` file in your home directory.
   This is done with a `key=value` entry in the file's `[openai]` section.
-  See the file `ai-cli-config` to understand how configuration
+  See the file [ai-cli-config](src/ai-cli-config) to understand how configuration
   files are structured.
   Note that OpenAI API access requires a different (usage-based)
   subscription from the ChatGPT one.
   OpenAI currently provides free trial credits to new users.
 * Run the interactive command-line programs, such as
   _bash_, _mysql_, _psql_, _gdb_, as you normally would.
-* To obtain AI help, enter a prompt and press `^X-a` (Ctrl-X followed by a)
+* To obtain AI help, enter a natural language prompt and press `^X-a` (Ctrl-X followed by a)
   in the (default) _Emacs_ key binding mode or `V` if you have configured
   _vi_ key bindings.
 
@@ -83,7 +85,7 @@ Contributions are welcomed through GitHub pull requests.
 Before working on something substantial,
 open an issue to signify your interest and coordinate with others.
 Particular useful are:
-* prompts for systems not yet supported
+* multi-shot prompts for systems not yet supported
   (see the [ai-cli-config](src/ai-cli-config) file),
 * support for other large language models
   (start from the [OpenAI_fetch.c](src/openai_fetch.c) file),
@@ -97,5 +99,5 @@ Particular useful are:
 ## Acknowledgements
 * API requests are made using [libcurl](https://curl.se/libcurl/)
 * The configuration file parsing is based on [inih](https://github.com/benhoyt/inih)
-* Unit testing uses [CuTest](https://github.com/ennorehling/cutest).
+* Unit testing uses [CuTest](https://github.com/ennorehling/cutest)
 * JSON is parsed using [Jansson](https://github.com/akheron/jansson/)
