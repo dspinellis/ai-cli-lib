@@ -19,7 +19,7 @@ distribution
 and under Windows Subsystem for Linux version 2),
 and under macOS (Ventura 13.4) on the arm64 architecture
 using Homebrew packages and executables linked against GNU Readline
-(not the macOS-supplied libedit compatibility layer).
+(not the macOS-supplied _editline_ compatibility layer).
 On Linux,
 in addition to _make_ and the GNU C library,
 the following packages are required:
@@ -28,7 +28,7 @@ the following packages are required:
 `libjansson4`
 `libjansson-dev`
 `libreadline-dev`.
-On macOS, in addition to an XCode installation, the following Homebrew
+On macOS, in addition to an Xcode installation, the following Homebrew
 packages are required:
 `jansson`
 `readline`.
@@ -92,17 +92,18 @@ make install PREFIX=~
   _vi_ key bindings.
 
 ### Note for macOS users
-Note that macOS ships with the _libedit_ line-editing library,
+Note that macOS ships with the _editline_ line-editing library,
 which is currently not compatible with _ai-cli_
 (it has been designed to tap onto GNU Readline).
 However, Homebrew tools link with GNU Readline, so they can be used
 with _ai-cli_.
-To find out whether a tool you're using links with GNU Readline or with
-_libedit_, use the _which_ command to determine the command's full
+To find out whether a tool you're using links with GNU Readline (`libreadline`)
+or with _editline_ (`libedit`),
+use the _which_ command to determine the command's full
 path, and then the _otool_ command to see the libraries it is linked with.
 In the example below,
 `/usr/bin/sqlite3` isn't linked with GNU Readline,
-but `/opt/homebrew/opt/sqlite/bin/sqlite3` is.
+but `/opt/homebrew/opt/sqlite/bin/sqlite3` is linked with _editline_.
 
 ```
 $ which sqlite3
@@ -123,7 +124,8 @@ $ otool -L /opt/homebrew/opt/sqlite/bin/sqlite3
 
 ```
 
-So, if you want to use the capabilities of _ai-cli_, configure your system
+Consequently,
+if you want to use the capabilities of _ai-cli_, configure your system
 to use the Homebrew commands in preference to the ones supplied with macOS.
 
 ## Reference documentation
@@ -141,8 +143,7 @@ Particular useful are:
   (see the [ai-cli-config](src/ai-cli-config) file),
 * support for other large language models
   (start from the [OpenAI_fetch.c](src/openai_fetch.c) file),
-* support for other libraries (mainly [libedit](http://cvsweb.netbsd.org/bsdweb.cgi/src/lib/libedit/)),
-* [editline](https://man.netbsd.org/editline.3) support,
+* support for other libraries (mainly [editline](https://man.netbsd.org/editline.3)),
 * ports to other platforms and distributions.
 
 ## See also
