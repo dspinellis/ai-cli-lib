@@ -5,7 +5,6 @@ LIBPREFIX ?= "$(PREFIX)/lib"
 MANPREFIX ?= "$(PREFIX)/share/man/"
 SHAREPREFIX ?= "$(PREFIX)/share/ai-cli"
 
-SHARED_LIB=ai_cli.so
 PROGS=rl_driver $(SHARED_LIB)
 RL_SRC=ai_cli.c config.c ini.c openai_fetch.c support.c
 TEST_SRC=$(wildcard *_test.c)
@@ -13,7 +12,7 @@ LIB=-lcurl -ljansson
 
 # Maximum configuration file size length; allocate on the stack; check errors
 # Report all warnings, treat warnings as errors
-CFLAGS=-DINI_MAX_LINE=2048 -DINI_USE_STACK=0 -DINI_ALLOW_REALLOC=1 -DINI_STOP_ON_FIRST_ERROR=1 -Wall -Werror
+CFLAGS=-DINI_MAX_LINE=2048 -DINI_USE_STACK=0 -DINI_ALLOW_REALLOC=1 -DINI_STOP_ON_FIRST_ERROR=1 -Wall -Werror -L/usr/local/lib
 
 # Help: Set DEBUG=1 to compile with debug information.
 ifdef DEBUG
@@ -22,20 +21,38 @@ else
 CFLAGS+=-O2
 endif
 
+OS := $(shell uname)
+ifeq ($(OS), Darwin)
+    HOMEBREW_PREFIX := $(shell brew --prefix)
+    CFLAGS += -I$(HOMEBREW_PREFIX)/include -I/usr/local/opt/readline/include -DMACOS
+    LDFLAGS += -L$(HOMEBREW_PREFIX)/lib -L/usr/local/opt/readline/lib
+
+    DLL_EXTENSION=dylib
+    SHARED_FLAGS=-dynamiclib -undefined dynamic_lookup
+    PRELOAD_VAR=DYLD_INSERT_LIBRARIES
+    SET_ADD_LIB=DYLD_LIBRARY_PATH=/opt/homebrew/lib:$$DYLD_LIBRARY_PATH
+else
+    DLL_EXTENSION=so
+    SHARED_FLAGS=-shared -fPIC
+    PRELOAD_VAR=LD_PRELOAD
+endif
+CFLAGS += '-DDLL_EXTENSION="$(DLL_EXTENSION)"'
+
+SHARED_LIB=ai_cli.$(DLL_EXTENSION)
 
 all: $(PROGS)
 
 rl_driver: rl_driver.c
-	cc rl_driver.c $(LIB) -lreadline -o $@
+	$(CC) $(LDFLAGS) rl_driver.c $(LIB) -lreadline -o $@
 
 $(SHARED_LIB): $(RL_SRC)
-	gcc -shared -fPIC $(CFLAGS) $(RL_SRC) -o $@ -ldl
+	$(CC) $(SHARED_FLAGS) $(CFLAGS) $(LDFLAGS) $(RL_SRC) -o $@ -ldl
 
 e2e-test: $(PROGS) # Help: Invoke the library with a readline read/print loop
-	LD_PRELOAD=`pwd`/$(SHARED_LIB) ./rl_driver
+	$(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) ./rl_driver
 
 all-tests: $(TEST_SRC) $(RL_SRC)
-	gcc $(CFLAGS) all_tests.c $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -lreadline -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) all_tests.c $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -lreadline -o $@
 
 unit-test: all-tests # Help: Run unit tests
 	./all-tests
@@ -43,7 +60,7 @@ unit-test: all-tests # Help: Run unit tests
 clean: # Help: Remove generated files
 	rm -f $(PROGS) all-tests
 
-install: ai_cli.so # Help: Install library and manual pages
+install: ai_cli.$(DLL_EXTENSION) # Help: Install library and manual pages
 	@mkdir -p $(DESTDIR)$(MANPREFIX)/man5
 	@mkdir -p $(DESTDIR)$(MANPREFIX)/man7
 	@mkdir -p $(DESTDIR)$(LIBPREFIX)

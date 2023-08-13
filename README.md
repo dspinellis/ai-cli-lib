@@ -13,15 +13,25 @@ Think of it as a command line copilot.
 
 ## Build
 The __ai_cli__
-library has been built and tested under Debian Linux
-(natively under version 11 and the x86_64 and armv7l architectures and under Windows Subsystem for Linux version 2).
-In addition to _make_ and the GNU C library,
+library has been built and tested under the Debian GNU/Linux (bullseye)
+distribution
+(natively under version 11 and the x86_64 and armv7l architectures
+and under Windows Subsystem for Linux version 2),
+and under macOS (Ventura 13.4) on the arm64 architecture
+using Homebrew packages and executables linked against GNU Readline
+(not the macOS-supplied libedit compatibility layer).
+On Linux,
+in addition to _make_ and the GNU C library,
 the following packages are required:
 `libcurl4`
 `libcurl4-openssl-dev`
 `libjansson4`
 `libjansson-dev`
 `libreadline-dev`.
+On macOS, in addition to an XCode installation, the following Homebrew
+packages are required:
+`jansson`
+`readline`.
 Package names may be different on other systems.
 
 ```
@@ -56,10 +66,17 @@ make install PREFIX=~
 ```
 
 ## Run
-* Set the `LD_PRELOAD` environment variable to load the library using its
-  full path.
+* Under __Linux__ set the `LD_PRELOAD` environment variable to load the
+  library using its full path.
   For example, under _bash_ run
   `export LD_PRELOAD=/home/myname/lib/ai_cli.so`.
+* Under __macOS__ set the `DYLD_INSERT_LIBRARIES` environment variable to load the
+  library using its full path.
+  For example, under _bash_ run
+  `export DYLD_INSERT_LIBRARIES=/Users/myname/lib/ai_cli.dylib`.
+  Also set the `DYLD_LIBRARY_PATH` environment variable to include
+  the Homebrew library directory, e.g.
+  `export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH`.
 * [Obtain your OpenAI API key](https://platform.openai.com/signup),
   and configure it in the `.aicliconfig` file in your home directory.
   This is done with a `key=value` entry in the file's `[openai]` section.
@@ -73,6 +90,41 @@ make install PREFIX=~
 * To obtain AI help, enter a natural language prompt and press `^X-a` (Ctrl-X followed by a)
   in the (default) _Emacs_ key binding mode or `V` if you have configured
   _vi_ key bindings.
+
+### Note for macOS users
+Note that macOS ships with the _libedit_ line-editing library,
+which is currently not compatible with _ai-cli_
+(it has been designed to tap onto GNU Readline).
+However, Homebrew tools link with GNU Readline, so they can be used
+with _ai-cli_.
+To find out whether a tool you're using links with GNU Readline or with
+_libedit_, use the _which_ command to determine the command's full
+path, and then the _otool_ command to see the libraries it is linked with.
+In the example below,
+`/usr/bin/sqlite3` isn't linked with GNU Readline,
+but `/opt/homebrew/opt/sqlite/bin/sqlite3` is.
+
+```
+$ which sqlite3
+/usr/bin/sqlite3
+
+$ otool -L /usr/bin/sqlite3
+/usr/bin/sqlite3:
+        /usr/lib/libncurses.5.4.dylib (compatibility version 5.4.0, current version 5.4.0)
+        /usr/lib/libedit.3.dylib (compatibility version 2.0.0, current version 3.0.0)
+        /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1319.100.3)
+
+$ otool -L /opt/homebrew/opt/sqlite/bin/sqlite3
+/opt/homebrew/opt/sqlite/bin/sqlite3:
+        /opt/homebrew/opt/readline/lib/libreadline.8.dylib (compatibility version 8.2.0, current version 8.2.0)
+        /usr/lib/libncurses.5.4.dylib (compatibility version 5.4.0, current version 5.4.0)
+        /usr/lib/libz.1.dylib (compatibility version 1.0.0, current version 1.2.11)
+        /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1319.100.3)
+
+```
+
+So, if you want to use the capabilities of _ai-cli_, configure your system
+to use the Homebrew commands in preference to the ones supplied with macOS.
 
 ## Reference documentation
 The _ai-cli_ reference documentation is provided as Unix manual
@@ -90,7 +142,8 @@ Particular useful are:
 * support for other large language models
   (start from the [OpenAI_fetch.c](src/openai_fetch.c) file),
 * support for other libraries (mainly [libedit](http://cvsweb.netbsd.org/bsdweb.cgi/src/lib/libedit/)),
-* ports to other platforms, such as macOS.
+* [editline](https://man.netbsd.org/editline.3) support,
+* ports to other platforms and distributions.
 
 ## See also
 * [edX open online course on Unix tools for data, software, and production engineering](https://www.spinellis.gr/unix/?ai-cli)

@@ -1,6 +1,7 @@
 .aicliconfig
 ai-cli.log
 ai_cli.so
+ai_cli.dylib
 all-tests
 all_tests
 eg.py

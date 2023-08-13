@@ -8,6 +8,9 @@
 .SH SYNOPSIS
 Set the
 .B LD_PRELOAD
+(under Linux) or
+.B DYLD_INSERT_LIBRARIES
+(under macOS)
 environment variable to load the library using its full path.
 Obtain your OpenAI API key and configure it in the
 .B .aicliconfig
@@ -58,9 +61,13 @@ which allows prompts to refine commands as needed.
 The syntax to force preload of the library according to the shell
 is as follows.
 
-Bash, Ksh and the traditional Bourne shell:
+Bash, Ksh and the traditional Bourne shell (for Linux and macOS):
 
 export LD_PRELOAD=/usr/lib/ai_cli.so
+
+or
+
+export DYLD_INSERT_LIBRARIES=/usr/lib/ai_cli.dylib
 
 C Shell:
 

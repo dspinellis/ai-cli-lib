@@ -74,12 +74,12 @@ get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
-	if (!dlopen("libcurl.so", RTLD_NOW | RTLD_GLOBAL)) {
-		readline_printf("\nError loading libcurl.so: %s\n", dlerror());
+	if (!dlopen("libcurl." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
+		readline_printf("\nError loading libcurl: %s\n", dlerror());
 		return -1;
 	}
-	if (!dlopen("libjansson.so", RTLD_NOW | RTLD_GLOBAL)) {
-		readline_printf("\nError loading libjansson.so: %s\n", dlerror());
+	if (!dlopen("libjansson." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
+		readline_printf("\nError loading libjansson: %s\n", dlerror());
 		return -1;
 	}
 

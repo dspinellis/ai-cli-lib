@@ -167,9 +167,13 @@ string_appendf(string_t *s, const char *fmt, ...)
 const char *
 short_program_name(void)
 {
+#ifdef MACOS
+	return getprogname();
+#else
 	// GNU libc-specific
 	extern char *program_invocation_short_name;
 	return program_invocation_short_name;
+#endif
 }
 
 // Show a message during readline processing

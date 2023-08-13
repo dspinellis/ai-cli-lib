@@ -13,17 +13,26 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
       run: sudo apt-get install libcurl4 libcurl4-openssl-dev libjansson4 libjansson-dev libreadline-dev
 
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install jansson readline
+
     - name: Make
       run: make -C src
 
-    - name: Test
+    - name: Unit test
       run: make -C src unit-test
+
+    - name: End-to-end test
+      run: echo hi | make -C src e2e-test
