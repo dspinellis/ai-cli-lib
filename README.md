@@ -1,7 +1,7 @@
 ![Build Status](https://img.shields.io/github/actions/workflow/status/dspinellis/ai-cli/main.yml?branch=main)
 
-# AI-CLI: AI help for CLI programs
-The __ai_cli__
+# ai-cli: AI help for CLI programs
+The __ai-cli__
 library detects programs that offer interactive command-line editing
 through the __readline__ library,
 and modifies their interface to allow obtaining help from OpenAI's
@@ -12,7 +12,7 @@ Think of it as a command line copilot.
 ![Demonstration](https://gist.githubusercontent.com/dspinellis/b25d9b3c3e6d6a6260774c32dc7be817/raw/cc191580cd9aa94bb2a2471e1f43b75a49817b64/ai-cli.gif)
 
 ## Build
-The __ai_cli__
+The _ai-cli_
 library has been built and tested under the Debian GNU/Linux (bullseye)
 distribution
 (natively under version 11 and the x86_64 and armv7l architectures
@@ -51,7 +51,8 @@ make unit-test
 cd src
 make e2e-test
 ```
-This will provide you a simple read-print loop where you can test the _ai_cli_ capability to
+This will provide you a simple read-print loop where you can test the
+_ai-cli_ capability to
 link with the Readline API of third party programs.
 
 ## Install
