@@ -16,16 +16,19 @@ CFLAGS=-DINI_MAX_LINE=2048 -DINI_USE_STACK=0 -DINI_ALLOW_REALLOC=1 -DINI_STOP_ON
 
 # Help: Set DEBUG=1 to compile with debug information.
 ifdef DEBUG
-CFLAGS+=-O0 -g
+    CFLAGS+=-O0 -g
 else
-CFLAGS+=-O2
+    CFLAGS+=-O2
 endif
 
 OS := $(shell uname)
 ifeq ($(OS), Darwin)
     HOMEBREW_PREFIX := $(shell brew --prefix)
-    CFLAGS += -I$(HOMEBREW_PREFIX)/include -I/usr/local/opt/readline/include -DMACOS
-    LDFLAGS += -L$(HOMEBREW_PREFIX)/lib -L/usr/local/opt/readline/lib
+    READLINE_INCLUDE=$(shell brew info readline | sed -n 's/export CPPFLAGS=//p')
+    CFLAGS += -I$(HOMEBREW_PREFIX)/include $(READLINE_INCLUDE) -DMACOS
+
+    READLINE_LIB=$(shell brew info readline | sed -n 's/export LDFLAGS=//p')
+    LDFLAGS += -L$(HOMEBREW_PREFIX)/lib $(READLINE_LIB)
 
     DLL_EXTENSION=dylib
     SHARED_FLAGS=-dynamiclib -undefined dynamic_lookup
@@ -43,7 +46,7 @@ SHARED_LIB=ai_cli.$(DLL_EXTENSION)
 all: $(PROGS)
 
 rl_driver: rl_driver.c
-	$(CC) $(LDFLAGS) rl_driver.c $(LIB) -lreadline -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) rl_driver.c $(LIB) -lreadline -o $@
 
 $(SHARED_LIB): $(RL_SRC)
 	$(CC) $(SHARED_FLAGS) $(CFLAGS) $(LDFLAGS) $(RL_SRC) -o $@ -ldl
