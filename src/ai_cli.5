@@ -70,9 +70,16 @@ It can be used when Emacs key bindings are in effect.
 .SH [GENERAL] SECTION OPTIONS
 .PP
 \fIlogfile=\fR
+.RS 4
 Specify a path where requests and responses will be logged.
 Useful for debugging and research purposes.
+.RE
+
+.PP
+\fItimestamp=\fR
 .RS 4
+Setting \fItimestamp\fP to \fItrue\fP will cause the log file
+to include the timesamp (in ISO format) of each request or response.
 .RE
 
 .SH [OPENAI] SECTION OPTIONS

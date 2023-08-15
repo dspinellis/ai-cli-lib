@@ -23,13 +23,15 @@
 #define _GNU_SOURCE
 
 #include <errno.h>
+#include <jansson.h>
+#include <readline/readline.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
-#include <readline/readline.h>
-#include <jansson.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include "support.h"
 
@@ -212,4 +214,19 @@ json_escape(const char *s)
 	string = json_string(s);
 	result = json_dumps(string, JSON_ENCODE_ANY);
 	return result;
+}
+
+// Output an ISO timestamp (with microseconds) to the specified file
+void
+timestamp(FILE *f)
+{
+	struct timeval tv;
+	char buffer[30];
+	struct tm *tm_info;
+
+	gettimeofday(&tv, NULL);
+	tm_info = localtime(&tv.tv_sec);
+
+	strftime(buffer, 26, "%Y-%m-%dT%H:%M:%S", tm_info);
+	fprintf(f, "{ \"timestamp\": \"%s.%06ld\" }\n", buffer, (long)tv.tv_usec);
 }

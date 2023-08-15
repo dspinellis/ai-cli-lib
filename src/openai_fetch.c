@@ -96,6 +96,17 @@ initialize(config_t *config)
 	return curl ? 0 : -1;
 }
 
+// Write the specified string to the logfile, if enabled
+void
+write_log(config_t *config, const char *message)
+{
+	if (!logfile)
+		return;
+	if (config->general_timestamp)
+		timestamp(logfile);
+	fputs(message, logfile);
+}
+
 
 /*
  * Fetch response from the OpenAI API given the provided prompt.
@@ -157,8 +168,7 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	    "    {\"role\": \"user\", \"content\": %s}\n", json_escape(prompt));
 	string_append(&json_request, "  ]\n}\n");
 
-	if (logfile)
-		fputs(json_request.ptr, logfile);
+	write_log(config, json_request.ptr);
 
 	curl_easy_setopt(curl, CURLOPT_URL, config->openai_endpoint);
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
@@ -175,8 +185,7 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 		return NULL;
 	}
 
-	if (logfile)
-		fputs(json_response.ptr, logfile);
+	write_log(config, json_response.ptr);
 
 	char *text_response = get_response_content(json_response.ptr);
 	free(json_request.ptr);

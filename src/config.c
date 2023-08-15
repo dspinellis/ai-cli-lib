@@ -92,6 +92,14 @@ prompt_number(const char *name, const char *prompt_prefix)
 	return result <= 0 || result > NPROMPTS ? -1 : result - 1;
 }
 
+// Return true if the string contains the value true
+bool
+strtobool(const char *string)
+{
+	return strcmp(string, "true") == 0;
+}
+
+
 static int
 config_handler(void* user, const char* section, const char* name,
     const char* value)
@@ -110,6 +118,7 @@ config_handler(void* user, const char* section, const char* name,
 	} while(0);
 
 	MATCH(general, logfile, safe_strdup(value));
+	MATCH(general, timestamp, strtobool(value));
 	MATCH(openai, endpoint, safe_strdup(value));
 	MATCH(openai, key, safe_strdup(value));
 	MATCH(openai, model, safe_strdup(value));

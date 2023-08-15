@@ -20,6 +20,8 @@
  *  limitations under the License.
  */
 
+#include <stdio.h>
+
 // Used for declarations that should be static but aren't for unit testing
 #define STATIC
 
@@ -45,3 +47,4 @@ void string_init(string_t *s, const char *value);
 size_t string_write(void *data, size_t size, size_t nmemb, string_t *s);
 size_t string_append(string_t *s, const char *data);
 int string_appendf(string_t *s, const char *fmt, ...);
+void timestamp(FILE *f);
