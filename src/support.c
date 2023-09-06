@@ -172,8 +172,7 @@ short_program_name(void)
 #ifdef MACOS
 	return getprogname();
 #else
-	// GNU libc-specific
-	extern char *program_invocation_short_name;
+	// GNU libc-specific; defined in errno.h
 	return program_invocation_short_name;
 #endif
 }
