@@ -29,8 +29,6 @@
 #include "support.h"
 #include "ini.h"
 
-bool verbose;
-
 const char hidden_config_name[] = ".aicliconfig";
 
 /*
@@ -106,7 +104,7 @@ config_handler(void* user, const char* section, const char* name,
 {
 	config_t *pconfig = (config_t *)user;
 
-	if (verbose)
+	if (pconfig->general_verbose)
 		printf("Config [%s]: %s=%s\n", section, name, value);
 
 	// Set the specified section and name to the given value
@@ -117,6 +115,7 @@ config_handler(void* user, const char* section, const char* name,
 		} \
 	} while(0);
 
+	MATCH(general, verbose, strtobool(value));
 	MATCH(general, logfile, safe_strdup(value));
 	MATCH(general, timestamp, strtobool(value));
 	MATCH(openai, endpoint, safe_strdup(value));

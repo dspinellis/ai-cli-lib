@@ -36,6 +36,7 @@ typedef struct uaprompt {
 typedef struct {
 	const char *general_logfile;	// File to log requests and responses
 	bool general_timestamp;		// Timestamp log entries
+	bool general_verbose;		// Verbose program operation
 	const char *openai_endpoint;	// API endpoint URL
 	const char *openai_key;		// API key
 	const char *openai_model;	// Model to use (e.g. gpt-3.5)
@@ -46,8 +47,6 @@ typedef struct {
 	const char *binding_vi;		// Single character for invoking AI help in Vi mode
 	const char *binding_emacs;	// Character sequence for invoking AI help in Emacs mode
 } config_t;
-
-extern bool verbose;
 
 void read_config(config_t *config);
 uaprompt_t prompt_find(config_t * config, const char *program_name);
