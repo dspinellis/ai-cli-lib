@@ -63,7 +63,7 @@ e2e-test: $(PROGS) # Help: Invoke the library with a readline read/print loop
 	$(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) ./rl_driver
 
 all-tests: $(TEST_SRC) $(RL_SRC)
-	$(CC) $(CFLAGS) $(LDFLAGS) all_tests.c $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -lreadline -o $@
+	$(CC) -DUNIT_TEST $(CFLAGS) $(LDFLAGS) all_tests.c $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -lreadline -o $@
 
 unit-test: all-tests # Help: Run unit tests
 	./all-tests

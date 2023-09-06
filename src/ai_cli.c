@@ -80,7 +80,10 @@ query_ai(int count, int key)
  * If the program is linked with readline(3),
  * read configuration and set keybindings for AI completion.
  */
-__attribute__((constructor)) static void
+#ifndef UNIT_TEST
+__attribute__((constructor)) static
+#endif
+void
 setup(void)
 {
 	/*
