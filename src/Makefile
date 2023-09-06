@@ -77,8 +77,8 @@ install: ai_cli.$(DLL_EXTENSION) # Help: Install library and manual pages
 	@mkdir -p $(DESTDIR)$(LIBPREFIX)
 	@mkdir -p $(DESTDIR)$(SHAREPREFIX)
 	install $(SHARED_LIB) $(DESTDIR)$(LIBPREFIX)/
-	install -m 644 ai_readlib.5 $(DESTDIR)$(MANPREFIX)/man5
-	install -m 644 ai_readlib.7 $(DESTDIR)$(MANPREFIX)/man7
+	install -m 644 ai_cli.5 $(DESTDIR)$(MANPREFIX)/man5
+	install -m 644 ai_cli.7 $(DESTDIR)$(MANPREFIX)/man7
 	install -m 644 ai-cli-config $(DESTDIR)$(SHAREPREFIX)/config
 
 help: # Help: Show this help message
