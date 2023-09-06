@@ -24,9 +24,7 @@ and under Cygwin (3.4.7).
 On Linux,
 in addition to _make_, a C compiler, and the GNU C library,
 the following packages are required:
-`libcurl4`
 `libcurl4-openssl-dev`
-`libjansson4`
 `libjansson-dev`
 `libreadline-dev`.
 On macOS, in addition to an Xcode installation, the following Homebrew
