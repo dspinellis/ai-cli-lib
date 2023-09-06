@@ -156,9 +156,11 @@ config_handler(void* user, const char* section, const char* name,
 }
 
 static void
-ini_checked_parse(const char* filename, ini_handler handler, void* user)
+ini_checked_parse(const char* filename, ini_handler handler, config_t *config)
 {
-	int val = ini_parse(filename, handler, user);
+	if (config->general_verbose)
+		printf("Config reading %s\n", filename);
+	int val = ini_parse(filename, handler, config);
 	// When unable to open file val is -1, which we ignore
 	if (val > 0) {
 		fprintf(stderr, "%s(%d): Initialization file error.\n", filename, val);
@@ -182,11 +184,11 @@ read_config(config_t *config)
 		char *home_config;
 
 		safe_asprintf(&home_config, "%s/%s", home_dir, "share/ai-cli/config");
-		ini_checked_parse(home_config, config_handler, &config);
+		ini_checked_parse(home_config, config_handler, config);
 		free(home_config);
 
 		safe_asprintf(&home_config, "%s/%s", home_dir, hidden_config_name);
-		ini_checked_parse(home_config, config_handler, &config);
+		ini_checked_parse(home_config, config_handler, config);
 		free(home_config);
 	}
 
