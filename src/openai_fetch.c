@@ -74,6 +74,14 @@ get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
+/*
+ * Under Linux link at runtime (late binding) to minimize linking cost
+ * (binding will only be performed by programs that use readline)
+ * and to avoid crashes associated with seccomp filtering.
+ *
+ * Under Cygwin link at compile time, because late binding isn't supported.
+ */
+#if !defined(__CYGWIN__)
 	if (!dlopen("libcurl." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
 		readline_printf("\nError loading libcurl: %s\n", dlerror());
 		return -1;
@@ -82,6 +90,7 @@ initialize(config_t *config)
 		readline_printf("\nError loading libjansson: %s\n", dlerror());
 		return -1;
 	}
+#endif
 
 	if (config->general_logfile)
 		logfile = fopen(config->general_logfile, "a");

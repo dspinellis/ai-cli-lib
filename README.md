@@ -17,11 +17,12 @@ library has been built and tested under the Debian GNU/Linux (bullseye)
 distribution
 (natively under version 11 and the x86_64 and armv7l architectures
 and under Windows Subsystem for Linux version 2),
-and under macOS (Ventura 13.4) on the arm64 architecture
+under macOS (Ventura 13.4) on the arm64 architecture
 using Homebrew packages and executables linked against GNU Readline
-(not the macOS-supplied _editline_ compatibility layer).
+(not the macOS-supplied _editline_ compatibility layer),
+and under Cygwin (3.4.7).
 On Linux,
-in addition to _make_ and the GNU C library,
+in addition to _make_, a C compiler, and the GNU C library,
 the following packages are required:
 `libcurl4`
 `libcurl4-openssl-dev`
@@ -32,6 +33,11 @@ On macOS, in addition to an Xcode installation, the following Homebrew
 packages are required:
 `jansson`
 `readline`.
+On Cygwin in addition to _make_, a C compiler, and the GNU C library,
+the following packages are required:
+`libcurl-devel`,
+`libjansson-devel`,
+`libreadline-devel`.
 Package names may be different on other systems.
 
 ```
@@ -67,8 +73,8 @@ make install PREFIX=~
 ```
 
 ## Run
-* Under __Linux__ set the `LD_PRELOAD` environment variable to load the
-  library using its full path.
+* Under __Linux__ and __Cygwin__ set the `LD_PRELOAD` environment variable
+  to load the library using its full path.
   For example, under _bash_ run
   `export LD_PRELOAD=/home/myname/lib/ai_cli.so`.
 * Under __macOS__ set the `DYLD_INSERT_LIBRARIES` environment variable to load the

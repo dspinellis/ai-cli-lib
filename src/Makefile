@@ -35,10 +35,18 @@ ifeq ($(OS), Darwin)
     PRELOAD_VAR=DYLD_INSERT_LIBRARIES
     SET_ADD_LIB=DYLD_LIBRARY_PATH=/opt/homebrew/lib:$$DYLD_LIBRARY_PATH
 else
-    DLL_EXTENSION=so
-    SHARED_FLAGS=-shared -fPIC
-    PRELOAD_VAR=LD_PRELOAD
+    ifeq ($(findstring CYGWIN,$(OS)),CYGWIN)
+        DLL_EXTENSION=dll
+        SHARED_FLAGS=-shared -fPIC
+        PRELOAD_VAR=LD_PRELOAD
+        SHARED_LIB_LIB=$(LIB) -lreadline
+    else
+        DLL_EXTENSION=so
+        SHARED_FLAGS=-shared -fPIC
+        PRELOAD_VAR=LD_PRELOAD
+    endif
 endif
+
 CFLAGS += '-DDLL_EXTENSION="$(DLL_EXTENSION)"'
 
 SHARED_LIB=ai_cli.$(DLL_EXTENSION)
@@ -49,7 +57,7 @@ rl_driver: rl_driver.c
 	$(CC) $(CFLAGS) $(LDFLAGS) rl_driver.c $(LIB) -lreadline -o $@
 
 $(SHARED_LIB): $(RL_SRC)
-	$(CC) $(SHARED_FLAGS) $(CFLAGS) $(LDFLAGS) $(RL_SRC) -o $@ -ldl
+	$(CC) $(SHARED_FLAGS) $(CFLAGS) $(LDFLAGS) $(RL_SRC) -o $@ -ldl $(SHARED_LIB_LIB)
 
 e2e-test: $(PROGS) # Help: Invoke the library with a readline read/print loop
 	$(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) ./rl_driver
