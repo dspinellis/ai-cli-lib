@@ -38,20 +38,20 @@ the following packages are required:
 `libreadline-devel`.
 Package names may be different on other systems.
 
-```
+```sh
 cd src
 make
 ```
 
 ## Test
 ### Unit testing
-```
+```sh
 cd src
 make unit-test
 ```
 
 ### End-to-end testing
-```
+```sh
 cd src
 make e2e-test
 ```
@@ -60,7 +60,7 @@ _ai-cli_ capability to
 link with the Readline API of third party programs.
 
 ## Install
-```
+```sh
 cd src
 
 # Global installation for all users
@@ -138,7 +138,7 @@ You can configure _ai-cli_ to be always available in your _bash_ shell by
 adding the following lines in your `.bashrc` file.
 Adjust the `AI_CLI_LIB` setting to match the path of _ai-cli_ installation;
 it is currently set for a local installation in your home directory.
-```
+```bash
 # >>> initialize ai-cli >>>
 
 # Location of the ai-cli shared library; adjust as needed.
@@ -196,7 +196,7 @@ Particular useful are:
 * [edX open online course on Unix tools for data, software, and production engineering](https://www.spinellis.gr/unix/?ai-cli)
 
 ## Acknowledgements
-* API requests are made using [libcurl](https://curl.se/libcurl/)
-* The configuration file parsing is based on [inih](https://github.com/benhoyt/inih)
-* Unit testing uses [CuTest](https://github.com/ennorehling/cutest)
-* JSON is parsed using [Jansson](https://github.com/akheron/jansson/)
+* API requests are made using [libcurl](https://curl.se/libcurl/).
+* The configuration file parsing is based on [inih](https://github.com/benhoyt/inih).
+* Unit testing uses [CuTest](https://github.com/ennorehling/cutest).
+* JSON is parsed using [Jansson](https://github.com/akheron/jansson/).
