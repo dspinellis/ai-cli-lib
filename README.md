@@ -152,8 +152,8 @@ Particular useful are:
 * ports to other platforms and distributions.
 
 ## See also
+* Diomidis Spinellis. Commands as AI Conversations. _IEEE Software_ 40(6), November/December 2023. doi: 10.1109/MS.2023.3307170
 * [edX open online course on Unix tools for data, software, and production engineering](https://www.spinellis.gr/unix/?ai-cli)
-* Diomidis Spinellis. AI Everywhere. _IEEE Software_ 40(6), November/December 2023.
 
 ## Acknowledgements
 * API requests are made using [libcurl](https://curl.se/libcurl/)
