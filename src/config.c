@@ -105,12 +105,13 @@ config_handler(void* user, const char* section, const char* name,
 	config_t *pconfig = (config_t *)user;
 
 	if (pconfig->general_verbose)
-		printf("Config [%s]: %s=%s\n", section, name, value);
+		fprintf(stderr, "Config [%s]: %s=%s\n", section, name, value);
 
 	// Set the specified section and name to the given value
 	#define MATCH(s, n, v) do { \
 		if (strcmp(section, #s) == 0 && strcmp(name, #n) == 0) { \
 			pconfig->s ## _ ## n = v; \
+			pconfig->s ## _ ## n ## _set = true; \
 			return 1; \
 		} \
 	} while(0);
@@ -118,14 +119,36 @@ config_handler(void* user, const char* section, const char* name,
 	MATCH(general, verbose, strtobool(value));
 	MATCH(general, logfile, safe_strdup(value));
 	MATCH(general, timestamp, strtobool(value));
+	MATCH(general, api, safe_strdup(value));
+
 	MATCH(openai, endpoint, safe_strdup(value));
 	MATCH(openai, key, safe_strdup(value));
 	MATCH(openai, model, safe_strdup(value));
 	MATCH(openai, temperature, atof(value));
+
 	MATCH(binding, vi, safe_strdup(value));
 	MATCH(binding, emacs, safe_strdup(value));
+
 	MATCH(prompt, context, strtocard(value));
 	MATCH(prompt, system, safe_strdup(value));
+
+	MATCH(llamacpp, endpoint, safe_strdup(value));
+	MATCH(llamacpp, temperature, atof(value));
+	MATCH(llamacpp, top_k, atoi(value));
+	MATCH(llamacpp, top_p, atof(value));
+	MATCH(llamacpp, n_predict, atoi(value));
+	MATCH(llamacpp, n_keep, atoi(value));
+	MATCH(llamacpp, tfs_z, atof(value));
+	MATCH(llamacpp, typical_p, atof(value));
+	MATCH(llamacpp, repeat_penalty, atof(value));
+	MATCH(llamacpp, repeat_last_n, atoi(value));
+	MATCH(llamacpp, penalize_nl, strtobool(value));
+	MATCH(llamacpp, presence_penalty, atof(value));
+	MATCH(llamacpp, frequency_penalty, atof(value));
+	MATCH(llamacpp, mirostat, atoi(value));
+	MATCH(llamacpp, mirostat_tau, atof(value));
+	MATCH(llamacpp, mirostat_eta, atof(value));
+	MATCH(llamacpp, seed, atoi(value));
 
 	if (!starts_with(section, prompt_prefix))
 		return 0;  /* unknown section/name, error */
@@ -159,7 +182,7 @@ static void
 ini_checked_parse(const char* filename, ini_handler handler, config_t *config)
 {
 	if (config->general_verbose)
-		printf("Config reading %s\n", filename);
+		fprintf(stderr, "Config reading %s\n", filename);
 	int val = ini_parse(filename, handler, config);
 	// When unable to open file val is -1, which we ignore
 	if (val > 0) {

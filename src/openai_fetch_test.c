@@ -43,10 +43,10 @@ static const char json_response[] = "{\n"
 	"  }\n"
 	"}\n";
 
-void
+static void
 test_response_parse(CuTest* tc)
 {
-	const char *response = get_response_content(json_response);
+	const char *response = openai_get_response_content(json_response);
 	CuAssertStrEquals(tc, "help", response);
 }
 

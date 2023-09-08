@@ -15,6 +15,11 @@ environment variable to load the library using its full path.
 Obtain your OpenAI API key and configure it in the
 .B .aicliconfig
 file.
+Alternatively, setup a running
+.UR "https://github.com/ggerganov/llama.cpp"
+llama.cpp
+.UE
+server and configure its endpoint.
 Run the interactive command-line programs, such as
 .BR bash ,
 .BR mysql ,
@@ -38,7 +43,7 @@ The
 .B ai_cli
 library detects programs that link against
 .BR readline (3)
-and modifies their interface to allow obtaining help from OpenAI's
+and modifies their interface to allow obtaining help from a
 generative pre-trained transformer large language model (LLM).
 Specifically,
 it creates a
@@ -51,7 +56,7 @@ and
 .BR vi
 keys.
 When the corresponding key or key sequence is pressed,
-suitable prompts are sent to the OpenAI API endpoint,
+suitable prompts are sent to the LLM API endpoint,
 and the prompt is replaced with the obtained response.
 (The prompt is added in the command-line history for further editing.)
 The LLM query contains context from previous commmands

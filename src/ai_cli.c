@@ -28,6 +28,7 @@
 #include <readline/history.h>
 
 #include "config.h"
+#include "llamacpp_fetch.h"
 #include "openai_fetch.h"
 
 /*
@@ -44,6 +45,10 @@ static int *history_length_ptr;
 // Loaded configuration
 static config_t config;
 
+// API fetch function, e.g. openai_fetch or llamacpp_fetch
+
+char * (*fetch)(config_t *config, const char *prompt, int history_length);
+
 /*
  * The user has has asked for AI to be queried on the typed text
  * Replace the user's text with the queried on
@@ -59,7 +64,7 @@ query_ai(int count, int key)
 	}
 
 	add_history(*rl_line_buffer_ptr);
-	char *response = openai_fetch(&config, *rl_line_buffer_ptr,
+	char *response = fetch(&config, *rl_line_buffer_ptr,
 	    *history_length_ptr);
 	if (!response)
 		return -1;
@@ -110,10 +115,29 @@ setup(void)
 		return;
 	}
 
-	if (!config.openai_key) {
-		fprintf(stderr, "No API key configured. Please obtain and configure an API key.\n");
+// Require a given configuration value
+#define REQUIRE(section, value) do { \
+	if (!config.section ## _ ## value ## _set) { \
+		fprintf(stderr, "Missing %s value in [%s] configuration section.\n", #value, #section); \
+		return; \
+	} \
+} while (0);
+
+	REQUIRE(general, api);
+
+	if (strcmp(config.general_api, "openai") == 0) {
+		fetch = openai_fetch;
+		REQUIRE(openai, key);
+		REQUIRE(openai, endpoint);
+	} else if (strcmp(config.general_api, "llamacpp") == 0) {
+		fetch = llamacpp_fetch;
+		REQUIRE(llamacpp, endpoint);
+	} else {
+		fprintf(stderr, "Unsupported API: [%s].\n", config.general_api);
 		return;
 	}
+	if (config.general_verbose)
+		fprintf(stderr, "API set to %s\n", config.general_api);
 
 	// Add named function, making it available to the user
 	rl_add_defun("query-ai", query_ai, -1);

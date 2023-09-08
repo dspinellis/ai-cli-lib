@@ -4,8 +4,9 @@
 The __ai-cli__
 library detects programs that offer interactive command-line editing
 through the __readline__ library,
-and modifies their interface to allow obtaining help from OpenAI's
-GPT large language model.
+and modifies their interface to allow obtaining help from a GPT
+large language model, such as OpenAI's or one provided through a
+[llama.cpp](https://github.com/ggerganov/llama.cpp) server.
 Think of it as a command line copilot.
 
 
@@ -82,14 +83,27 @@ make install PREFIX=~
   Also set the `DYLD_LIBRARY_PATH` environment variable to include
   the Homebrew library directory, e.g.
   `export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH`.
-* [Obtain your OpenAI API key](https://platform.openai.com/signup),
-  and configure it in the `.aicliconfig` file in your home directory.
-  This is done with a `key=value` entry in the file's `[openai]` section.
-  See the file [ai-cli-config](src/ai-cli-config) to understand how configuration
-  files are structured.
-  Note that OpenAI API access requires a different (usage-based)
-  subscription from the ChatGPT one.
-  OpenAI currently provides free trial credits to new users.
+* Perform one of the following.
+  * [Obtain your OpenAI API key](https://platform.openai.com/signup),
+    and configure it in the `.aicliconfig` file in your home directory.
+    This is done with a `key=value` entry in the file's `[openai]` section.
+    In addition, add `api=openai` in the file's `[general]` section.
+    See the file [ai-cli-config](src/ai-cli-config) to understand how configuration
+    files are structured.
+    Note that OpenAI API access requires a different (usage-based)
+    subscription from the ChatGPT one.
+    OpenAI currently provides free trial credits to new users.
+  * Configure a [llama.cpp](https://github.com/ggerganov/llama.cpp) server
+    and list its `endpoint` (e.g. `endpoint=http://localhost:8080/completion`
+    in the configuration file's `[llamacpp]` section.
+    In addition, add `api=openai` in the file's `[general]` section.
+    In brief running a _llama.cpp_ server involves
+    * compiling [llama.cpp](https://github.com/ggerganov/llama.cpp) (ideally
+      with GPU support),
+    * downloading downloading, converting, and quantizing suitable model
+      files (the file should if in your GPU's memory, and don't consider
+      using a file with more than 7 billion parameters on a CPU),
+    * Running the server with a command such as `server -m models/llama-2-13b-chat/ggml-model-q4_0.gguf -c 2048 --n-gpu-layers 100`.
 * Run the interactive command-line programs, such as
   _bash_, _mysql_, _psql_, _gdb_, as you normally would.
 * To obtain AI help, enter a natural language prompt and press `^X-a` (Ctrl-X followed by a)

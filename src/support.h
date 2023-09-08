@@ -20,10 +20,15 @@
  *  limitations under the License.
  */
 
+#include <curl/curl.h>
 #include <stdio.h>
+
+#include "config.h"
 
 // Used for declarations that should be static but aren't for unit testing
 #define STATIC
+
+extern CURL *curl;
 
 int safe_asprintf(char **strp, const char *fmt, ...);
 void *safe_calloc(size_t nmemb, size_t size);
@@ -48,3 +53,5 @@ size_t string_write(void *data, size_t size, size_t nmemb, string_t *s);
 size_t string_append(string_t *s, const char *data);
 int string_appendf(string_t *s, const char *fmt, ...);
 void timestamp(FILE *f);
+int curl_initialize(config_t *config);
+void write_log(config_t *config, const char *message);

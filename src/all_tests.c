@@ -4,6 +4,7 @@
 
 CuSuite* cu_config_suite();
 CuSuite* cu_fetch_openai_suite();
+CuSuite* cu_fetch_llamacpp_suite();
 CuSuite* cu_support_suite();
 
 void
@@ -14,6 +15,7 @@ run_all_tests(void)
 
 	CuSuiteAddSuite(suite, cu_config_suite());
 	CuSuiteAddSuite(suite, cu_fetch_openai_suite());
+	CuSuiteAddSuite(suite, cu_fetch_llamacpp_suite());
 	CuSuiteAddSuite(suite, cu_support_suite());
 
 	CuSuiteRun(suite);

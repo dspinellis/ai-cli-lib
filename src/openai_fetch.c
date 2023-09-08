@@ -24,20 +24,17 @@
 #include <curl/curl.h>
 #include <readline/history.h>
 #include <jansson.h>
-#include <dlfcn.h>
 
 #include "config.h"
 #include "support.h"
 
-static CURL *curl;
 static char *authorization;
 static char *system_role;
 static const char *program_name;
-static FILE *logfile;
 
 // Return the response content from an OpenAI JSON response
 STATIC char *
-get_response_content(const char *json_response)
+openai_get_response_content(const char *json_response)
 {
 	json_error_t error;
 	json_t *root = json_loads(json_response, 0, &error);
@@ -74,48 +71,11 @@ get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
-/*
- * Under Linux link at runtime (late binding) to minimize linking cost
- * (binding will only be performed by programs that use readline)
- * and to avoid crashes associated with seccomp filtering.
- *
- * Under Cygwin link at compile time, because late binding isn't supported.
- */
-#if !defined(__CYGWIN__)
-	if (!dlopen("libcurl." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
-		readline_printf("\nError loading libcurl: %s\n", dlerror());
-		return -1;
-	}
-	if (!dlopen("libjansson." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
-		readline_printf("\nError loading libjansson: %s\n", dlerror());
-		return -1;
-	}
-#endif
-
-	if (config->general_logfile)
-		logfile = fopen(config->general_logfile, "a");
 	program_name = short_program_name();
 	safe_asprintf(&authorization, "Authorization: Bearer %s", config->openai_key);
 	safe_asprintf(&system_role, config->prompt_system, program_name);
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-
-	curl = curl_easy_init();
-	if (!curl)
-		readline_printf("\nCURL initialization failed.\n");
-	return curl ? 0 : -1;
+	return curl_initialize(config);
 }
-
-// Write the specified string to the logfile, if enabled
-void
-write_log(config_t *config, const char *message)
-{
-	if (!logfile)
-		return;
-	if (config->general_timestamp)
-		timestamp(logfile);
-	fputs(message, logfile);
-}
-
 
 /*
  * Fetch response from the OpenAI API given the provided prompt.
@@ -196,7 +156,7 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 
 	write_log(config, json_response.ptr);
 
-	char *text_response = get_response_content(json_response.ptr);
+	char *text_response = openai_get_response_content(json_response.ptr);
 	free(json_request.ptr);
 	free(json_response.ptr);
 	return text_response;

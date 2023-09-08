@@ -37,6 +37,26 @@ typedef struct {
 	const char *general_logfile;	// File to log requests and responses
 	bool general_timestamp;		// Timestamp log entries
 	bool general_verbose;		// Verbose program operation
+	const char *general_api;	// API to use
+	const char *llamacpp_endpoint;		// API endpoint URL
+	// Other llama.cpp parameters in the order documented in
+	// https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md
+	double llamacpp_temperature;
+	int llamacpp_top_k;
+	double llamacpp_top_p;
+	int llamacpp_n_predict;
+	int llamacpp_n_keep;
+	double llamacpp_tfs_z;
+	double llamacpp_typical_p;
+	double llamacpp_repeat_penalty;
+	int llamacpp_repeat_last_n;
+	bool llamacpp_penalize_nl;
+	double llamacpp_presence_penalty;
+	double llamacpp_frequency_penalty;
+	int llamacpp_mirostat;
+	double llamacpp_mirostat_tau;
+	double llamacpp_mirostat_eta;
+	int llamacpp_seed;
 	const char *openai_endpoint;	// API endpoint URL
 	const char *openai_key;		// API key
 	const char *openai_model;	// Model to use (e.g. gpt-3.5)
@@ -46,6 +66,39 @@ typedef struct {
 	uaprompt_t shots;		// Program-specific training shots
 	const char *binding_vi;		// Single character for invoking AI help in Vi mode
 	const char *binding_emacs;	// Character sequence for invoking AI help in Emacs mode
+
+	// All the above parameters; set to true is set by configuration
+	bool general_logfile_set;
+	bool general_timestamp_set;
+	bool general_verbose_set;
+	bool general_api_set;
+	bool parameters_set;
+	bool llamacpp_endpoint_set;
+	bool llamacpp_temperature_set;
+	bool llamacpp_top_k_set;
+	bool llamacpp_top_p_set;
+	bool llamacpp_n_predict_set;
+	bool llamacpp_n_keep_set;
+	bool llamacpp_tfs_z_set;
+	bool llamacpp_typical_p_set;
+	bool llamacpp_repeat_penalty_set;
+	bool llamacpp_repeat_last_n_set;
+	bool llamacpp_penalize_nl_set;
+	bool llamacpp_presence_penalty_set;
+	bool llamacpp_frequency_penalty_set;
+	bool llamacpp_mirostat_set;
+	bool llamacpp_mirostat_tau_set;
+	bool llamacpp_mirostat_eta_set;
+	bool llamacpp_seed_set;
+	bool openai_endpoint_set;
+	bool openai_key_set;
+	bool openai_model_set;
+	bool openai_temperature_set;
+	bool prompt_context_set;
+	bool prompt_system_set;
+	bool shots_set;
+	bool binding_vi_set;
+	bool binding_emacs_set;
 } config_t;
 
 void read_config(config_t *config);

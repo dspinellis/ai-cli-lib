@@ -1,7 +1,7 @@
 /*-
  *
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
- *  Safe memory allocation and other functions.
+ *  Safe memory allocation and other support functions.
  *  The allocation functions exit the program with an error messge
  *  if allocation fails.
  *
@@ -23,6 +23,7 @@
 #define _GNU_SOURCE
 
 #include <errno.h>
+#include <dlfcn.h>
 #include <jansson.h>
 #include <readline/readline.h>
 #include <stdio.h>
@@ -34,6 +35,9 @@
 #include <time.h>
 
 #include "support.h"
+
+static FILE *logfile;
+CURL *curl;
 
 // Exit with a failure if result_ok is false
 static void
@@ -228,4 +232,51 @@ timestamp(FILE *f)
 
 	strftime(buffer, 26, "%Y-%m-%dT%H:%M:%S", tm_info);
 	fprintf(f, "{ \"timestamp\": \"%s.%06ld\" }\n", buffer, (long)tv.tv_usec);
+}
+
+/*
+ * Initialize curl connections
+ * Return 0 on success -1 on error
+ */
+int
+curl_initialize(config_t *config)
+{
+/*
+ * Under Linux link at runtime (late binding) to minimize linking cost
+ * (binding will only be performed by programs that use readline)
+ * and to avoid crashes associated with seccomp filtering.
+ *
+ * Under Cygwin link at compile time, because late binding isn't supported.
+ */
+#if !defined(__CYGWIN__)
+	if (!dlopen("libcurl." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
+		readline_printf("\nError loading libcurl: %s\n", dlerror());
+		return -1;
+	}
+	if (!dlopen("libjansson." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
+		readline_printf("\nError loading libjansson: %s\n", dlerror());
+		return -1;
+	}
+#endif
+
+	if (config->general_logfile)
+		logfile = fopen(config->general_logfile, "a");
+
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+
+	curl = curl_easy_init();
+	if (!curl)
+		readline_printf("\nCURL initialization failed.\n");
+	return curl ? 0 : -1;
+}
+
+// Write the specified string to the logfile, if enabled
+void
+write_log(config_t *config, const char *message)
+{
+	if (!logfile)
+		return;
+	if (config->general_timestamp)
+		timestamp(logfile);
+	fputs(message, logfile);
 }
