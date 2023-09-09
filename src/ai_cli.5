@@ -100,9 +100,7 @@ for more details.
 .PP
 \fIendpoint=\fR
 .RS 4
-The URL of the API endpoint, e.g.
-.UR "http://localhost:8080/completion"
-.UE
+The URL of the API endpoint, e.g.  \fChttp://localhost:8080/completion\fP.
 .RE
 
 .PP
@@ -207,6 +205,9 @@ specified in the corresponding section.
 .SH EXAMPLE
 .RS
 .nf
+[general]
+api = openai
+
 [prompt]
 system = You're an assistant providing executable commands for %s.
 context = 3
@@ -216,6 +217,9 @@ endpoint = https://api.openai.com/v1/chat/completions
 model = gpt-3.5-turbo
 temperature = 1.0
 key = sk-hjgds5hljfgs8dfw4ljghljfhfFER344FFFggf84fssddG4k
+
+[llamacpp]
+endpoint = http://localhost:8080/completion
 
 [binding]
 vi = V

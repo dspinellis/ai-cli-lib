@@ -96,13 +96,13 @@ make install PREFIX=~
   * Configure a [llama.cpp](https://github.com/ggerganov/llama.cpp) server
     and list its `endpoint` (e.g. `endpoint=http://localhost:8080/completion`
     in the configuration file's `[llamacpp]` section.
-    In addition, add `api=openai` in the file's `[general]` section.
+    In addition, add `api=llamacpp` in the file's `[general]` section.
     In brief running a _llama.cpp_ server involves
     * compiling [llama.cpp](https://github.com/ggerganov/llama.cpp) (ideally
       with GPU support),
-    * downloading downloading, converting, and quantizing suitable model
-      files (the file should if in your GPU's memory, and don't consider
-      using a file with more than 7 billion parameters on a CPU),
+    * downloading, converting, and quantizing suitable model
+      files (use files with more than 7 billion parameters only on GPUs
+      with sufficient memory to hold them),
     * Running the server with a command such as `server -m models/llama-2-13b-chat/ggml-model-q4_0.gguf -c 2048 --n-gpu-layers 100`.
 * Run the interactive command-line programs, such as
   _bash_, _mysql_, _psql_, _gdb_, as you normally would.
