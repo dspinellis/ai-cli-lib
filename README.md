@@ -208,6 +208,7 @@ Particular useful are:
 ## See also
 * Diomidis Spinellis. [Commands as AI Conversations](https://arxiv.org/abs/2309.06551). _IEEE Software_ 40(6), November/December 2023. doi: 10.1109/MS.2023.3307170
 * [edX open online course on Unix tools for data, software, and production engineering](https://www.spinellis.gr/unix/?ai-cli)
+* [celery-ai](https://github.com/ortegaalfredo/celery-ai): similar idea, but withut program-specific prompts; works by monitoring keyboard events through [pynput](https://pynput.readthedocs.io/).
 * [ChatGDB](https://github.com/pgosar/ChatGDB): a _gdb_-specific front-end.
 * [ai-cli](https://github.com/abhagsain/ai-cli): a (similarly named) command line interface to AI models.
 
