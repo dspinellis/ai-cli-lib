@@ -1,6 +1,6 @@
-![Build Status](https://img.shields.io/github/actions/workflow/status/dspinellis/ai-cli/main.yml?branch=main)
+![Build Status](https://img.shields.io/github/actions/workflow/status/dspinellis/ai-cli-lib/main.yml?branch=main)
 
-# ai-cli: AI help for CLI programs
+# ai-cli-lib: AI help for CLI programs
 The __ai-cli__
 library detects programs that offer interactive command-line editing
 through the __readline__ library,
@@ -57,7 +57,7 @@ cd src
 make e2e-test
 ```
 This will provide you a simple read-print loop where you can test the
-_ai-cli_ capability to
+_ai-cli_ library's capability to
 link with the Readline API of third party programs.
 
 ## Install
@@ -112,10 +112,10 @@ make install PREFIX=~
 
 ### Note for macOS users
 Note that macOS ships with the _editline_ line-editing library,
-which is currently not compatible with _ai-cli_
+which is currently not compatible with the _ai-cli_ library
 (it has been designed to tap onto GNU Readline).
 However, Homebrew tools link with GNU Readline, so they can be used
-with _ai-cli_.
+with the _ai-cli_ library.
 To find out whether a tool you're using links with GNU Readline (`libreadline`)
 or with _editline_ (`libedit`),
 use the _which_ command to determine the command's full
@@ -144,16 +144,16 @@ $ otool -L /opt/homebrew/opt/sqlite/bin/sqlite3
 ```
 
 Consequently,
-if you want to use the capabilities of _ai-cli_, configure your system
+if you want to use the capabilities of the _ai-cli_ library, configure your system
 to use the Homebrew commands in preference to the ones supplied with macOS.
 
 ## Shell startup configuration
-You can configure _ai-cli_ to be always available in your _bash_ shell by
+You can configure the _ai-cli_ library to be always available in your _bash_ shell by
 adding the following lines in your `.bashrc` file.
-Adjust the `AI_CLI_LIB` setting to match the path of _ai-cli_ installation;
+Adjust the `AI_CLI_LIB` setting to match the _ai-cli_ library installation path;
 it is currently set for a local installation in your home directory.
 ```bash
-# >>> initialize ai-cli >>>
+# >>> initialize the ai-cli library >>>
 
 # Location of the ai-cli shared library; adjust as needed.
 AI_CLI_LIB=("$HOME/lib/ai_cli."*)
@@ -184,7 +184,7 @@ then
   # environment variables.
   exec bash
 fi
-# <<< initialize ai-cli <<<
+# <<< initialize the ai-cli library <<<
 ```
 
 ## Reference documentation
