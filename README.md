@@ -211,6 +211,7 @@ Particular useful are:
 * [celery-ai](https://github.com/ortegaalfredo/celery-ai): similar idea, but withut program-specific prompts; works by monitoring keyboard events through [pynput](https://pynput.readthedocs.io/).
 * [ChatGDB](https://github.com/pgosar/ChatGDB): a _gdb_-specific front-end.
 * [ai-cli](https://github.com/abhagsain/ai-cli): a (similarly named) command line interface to AI models.
+* [Warp AI](https://www.warp.dev/warp-ai): A terminal with integrated AI capabilities.
 
 ## Acknowledgements
 * API requests are made using [libcurl](https://curl.se/libcurl/).
