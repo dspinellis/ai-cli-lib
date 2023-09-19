@@ -279,4 +279,5 @@ write_log(config_t *config, const char *message)
 	if (config->general_timestamp)
 		timestamp(logfile);
 	fputs(message, logfile);
+	fflush(logfile);
 }
