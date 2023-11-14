@@ -142,8 +142,13 @@ setup(void)
 	// Add named function, making it available to the user
 	rl_add_defun("query-ai", query_ai, -1);
 
-	// Bind it to Emacs and vi
-	if (config.binding_emacs)
+	/*
+	 * Bind the function to Emacs and vi.
+	 * Programs linked with libedit (editline) lack rl_bind_keyseq and
+	 * will fail if it's executed. To avoid this, first test if the
+	 * function i* s available.
+	 */
+	if (config.binding_emacs && dlsym(RTLD_DEFAULT, "rl_bind_keyseq"))
 		rl_bind_keyseq(config.binding_emacs, query_ai);
 	if (config.binding_vi)
 		rl_bind_key_in_map(*config.binding_vi, query_ai, vi_movement_keymap_ptr);
