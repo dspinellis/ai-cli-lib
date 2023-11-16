@@ -42,3 +42,11 @@ user-2 = Show average of grade in table students
 assistant-2 = SELECT AVG(grade) FROM students;
 user-3 = xyzzy
 assistant-3 = -- Sorry I can't help.
+
+[prompt-bc]
+user-1 = Calculate 2 raised to the 64th power
+assistant-1 = 2^64
+user-2 = Increment variable i by 1
+assistant-2 = i++
+user-3 = xyzzy
+assistant-3 = /* Sorry I can't help. */
