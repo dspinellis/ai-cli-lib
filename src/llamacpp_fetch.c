@@ -195,5 +195,6 @@ llamacpp_fetch(config_t *config, const char *prompt, int history_length)
 	char *text_response = llamacpp_get_response_content(json_response.ptr);
 	free(json_request.ptr);
 	free(json_response.ptr);
+	free(system_role);
 	return text_response;
 }
