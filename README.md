@@ -75,7 +75,8 @@ make install PREFIX=~
 * Under __Linux__ and __Cygwin__ set the `LD_PRELOAD` environment variable
   to load the library using its full path.
   For example, under _bash_ run
-  `export LD_PRELOAD=/home/myname/lib/ai_cli.so`.
+  `export LD_PRELOAD=/usr/local/lib/ai_cli.so` (global installation) or
+  `export LD_PRELOAD=/home/myname/lib/ai_cli.so` (local installation).
 * Under __macOS__ set the `DYLD_INSERT_LIBRARIES` environment variable to load the
   library using its full path.
   For example, under _bash_ run
@@ -84,9 +85,9 @@ make install PREFIX=~
   the Homebrew library directory, e.g.
   `export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH`.
 * Perform one of the following.
-  * [Obtain your OpenAI API key](https://platform.openai.com/signup),
+  * [Obtain your OpenAI API key](https://platform.openai.com/api-keys),
     and configure it in the `.aicliconfig` file in your home directory.
-    This is done with a `key=value` entry in the file's `[openai]` section.
+    This is done with a `key={key}` entry in the file's `[openai]` section.
     In addition, add `api=openai` in the file's `[general]` section.
     See the file [ai-cli-config](src/ai-cli-config) to understand how configuration
     files are structured.
