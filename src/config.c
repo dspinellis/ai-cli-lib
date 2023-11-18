@@ -186,7 +186,7 @@ ini_checked_parse(const char* filename, ini_handler handler, config_t *config)
 	int val = ini_parse(filename, handler, config);
 	// When unable to open file val is -1, which we ignore
 	if (val > 0) {
-		fprintf(stderr, "%s(%d): Initialization file error.\n", filename, val);
+		fprintf(stderr, "%s:%d:1: Initialization file error.\n", filename, val);
 		exit(EXIT_FAILURE);
 	}
 }
