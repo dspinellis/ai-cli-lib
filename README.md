@@ -106,7 +106,12 @@ make install PREFIX=~
       with sufficient memory to hold them),
     * Running the server with a command such as `server -m models/llama-2-13b-chat/ggml-model-q4_0.gguf -c 2048 --n-gpu-layers 100`.
 * Run the interactive command-line programs, such as
-  _bash_, _mysql_, _psql_, _gdb_, as you normally would.
+  _bash_, _mysql_, _psql_, _gdb_, _sqlite3_, _bc_, as you normally would.
+* If the program you want to prompt in natural language isn't linked
+with the GNU Readline library, you can still make it work with Readline,
+by invoking it through [rlwrap](https://github.com/hanslub42/rlwrap).
+This however looses the program-specific context provision, because
+the program's name appears to The _ai-cli_ library as `rlwrap`.
 * To obtain AI help, enter a natural language prompt and press `^X-a` (Ctrl-X followed by a)
   in the (default) _Emacs_ key binding mode or `V` if you have configured
   _vi_ key bindings.
