@@ -216,7 +216,6 @@ Particular useful are:
 * [edX open online course on Unix tools for data, software, and production engineering](https://www.spinellis.gr/unix/?ai-cli)
 * Agarwal, Mayank et al. [NeurIPS 2020 NLC2CMD Competition: Translating Natural Language to Bash Commands](https://arxiv.org/pdf/2103.02523.pdf). ArXiv abs/2103.02523 (2021): n. pag.
 * [celery-ai](https://github.com/ortegaalfredo/celery-ai): similar idea, but without program-specific prompts; works by monitoring keyboard events through [pynput](https://pynput.readthedocs.io/).
-* [warp](https://www.warp.dev/): a powerful macOS terminal application with built-in AI.
 * [ChatGDB](https://github.com/pgosar/ChatGDB): a _gdb_-specific front-end.
 * [ai-cli](https://github.com/abhagsain/ai-cli): a (similarly named) command line interface to AI models.
 * [Warp AI](https://www.warp.dev/warp-ai): A terminal with integrated AI capabilities.
