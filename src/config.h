@@ -102,4 +102,6 @@ typedef struct {
 } config_t;
 
 void read_config(config_t *config);
+void read_file_config(config_t *config, const char *file_path);
+
 uaprompt_t prompt_find(config_t * config, const char *program_name);

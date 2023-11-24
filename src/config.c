@@ -230,3 +230,13 @@ read_config(config_t *config)
 	// .aicliconfig
 	ini_checked_parse(hidden_config_name, config_handler, config);
 }
+
+/*
+ * Read the configuration file from the specified file path into config.
+ * This allows testing the config handler.
+ */
+void
+read_file_config(config_t *config, const char *file_path)
+{
+	ini_checked_parse(file_path, config_handler, config);
+}

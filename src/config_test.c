@@ -23,12 +23,14 @@
 #include "CuTest.h"
 #include "config.h"
 
+static const char *LOCAL_CONFIG = "ai-cli-config";
+
 void
 test_read_config(CuTest* tc)
 {
 	static config_t config;
 
-	read_config(&config);
+	read_file_config(&config, LOCAL_CONFIG);
 
 	CuAssertIntEquals(tc, 3, config.prompt_context);
 	CuAssertPtrNotNull(tc, config.openai_endpoint);
@@ -48,7 +50,7 @@ test_read_overloaded_config(CuTest* tc)
 	static config_t config;
 
 	putenv("AI_CLI_binding_vi=A");
-	read_config(&config);
+	read_file_config(&config, LOCAL_CONFIG);
 	CuAssertStrEquals(tc, "A", config.binding_vi);
 }
 
@@ -59,7 +61,7 @@ test_read_env_added_config(CuTest* tc)
 	static config_t config;
 
 	putenv("AI_CLI_general_logfile=foo.log");
-	read_config(&config);
+	read_file_config(&config, LOCAL_CONFIG);
 	CuAssertStrEquals(tc, "foo.log", config.general_logfile);
 }
 
