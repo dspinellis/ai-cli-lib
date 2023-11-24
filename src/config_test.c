@@ -18,6 +18,8 @@
  *  limitations under the License.
  */
 
+#include <stdlib.h>
+
 #include "CuTest.h"
 #include "config.h"
 
@@ -37,6 +39,28 @@ test_read_config(CuTest* tc)
 	CuAssertStrEquals(tc, "Disable breakpoint number 4", gdb->user[0]);
 	CuAssertStrEquals(tc, "delete 4", gdb->assistant[0]);
 	CuAssertTrue(tc, gdb->user[2] == NULL);
+}
+
+// Read configuration file overloaded by an environment variable
+void
+test_read_overloaded_config(CuTest* tc)
+{
+	static config_t config;
+
+	putenv("AI_CLI_binding_vi=A");
+	read_config(&config);
+	CuAssertStrEquals(tc, "A", config.binding_vi);
+}
+
+// Read configuration file and an added environment variable
+void
+test_read_env_added_config(CuTest* tc)
+{
+	static config_t config;
+
+	putenv("AI_CLI_general_logfile=foo.log");
+	read_config(&config);
+	CuAssertStrEquals(tc, "foo.log", config.general_logfile);
 }
 
 void
@@ -82,6 +106,8 @@ cu_config_suite(void)
 	SUITE_ADD_TEST(suite, test_prompt_number);
 	SUITE_ADD_TEST(suite, test_prompt_add_find);
 	SUITE_ADD_TEST(suite, test_read_config);
+	SUITE_ADD_TEST(suite, test_read_overloaded_config);
+	SUITE_ADD_TEST(suite, test_read_env_added_config);
 
 	return suite;
 }

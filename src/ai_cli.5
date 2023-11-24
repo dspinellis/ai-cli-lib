@@ -15,8 +15,13 @@ searched in the order specified in the
 section of library's manual page.
 
 .SH DESCRIPTION
-Configuration files are searched and loaded in the specified order.
+Configuration files are searched and loaded in the order specified in
+.BR ai_cli (5).
 Entries in configuration files read later can override previous ones.
+All entries can be overridden by supplying to a program's invocation
+an environment variable named
+\fCAI_CLI_\fIsection\fC_\fIoption\fR.
+
 In general, system-wide configuration files are used to specify
 default behaviors,
 while user configuration files are used for individual tailoring,
