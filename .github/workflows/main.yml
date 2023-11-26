@@ -26,6 +26,7 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew update
+        brew upgrade || true
         brew install jansson readline
 
     - name: Make
