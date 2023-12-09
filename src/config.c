@@ -98,6 +98,12 @@ strtobool(const char *string)
 }
 
 
+// Process each line of the config
+//    [section]
+//    name = value
+// puts result in user
+//
+// returns 1 if success 0 otherwise
 static int
 config_handler(void* user, const char* section, const char* name,
     const char* value)
@@ -162,16 +168,31 @@ config_handler(void* user, const char* section, const char* name,
 	MATCH(llamacpp, mirostat_eta, atof);
 	MATCH(llamacpp, seed, atoi);
 
-	if (!starts_with(section, prompt_prefix))
+	if (!starts_with(section, prompt_prefix)) {
+                fprintf(stderr, "\nUnknown section in config...\n section [%s]\n", section);
 		return 0;  /* unknown section/name, error */
-
-	/*
-	 * A user or assistant n-short prompt, such as:
+        }
+	/* program specific section. It can override some global config values
+	 * 
 	 * [prompt-gdb]
+         * A user or assistant n-short prompt, such as:
 	 * user-1 = Disable breakpoint number 4
 	 */
 	const char *program_name = section + sizeof(prompt_prefix) - 1;
 	uaprompt_t prompt = prompt_find(pconfig, program_name);
+        
+#define MATCH_PROGRAM(s, n, fn)            \
+            if (strcmp(name, #n) == 0) {  \
+                pconfig->s ## _ ## n = fn(value);                       \
+                pconfig->s ## _ ## n ## _set = true;                    \
+                if (pconfig->general_verbose) {                         \
+                    fprintf(stderr, "   Overriding general config [%s] with program specific [%s] value [%s]\n",\
+                            #n, program_name, value);                   \
+                }\
+                return 1;                                               \
+            }                                                           
+
+
 	if (!prompt)
 		prompt = prompt_add(pconfig, program_name);
 	if (starts_with(name, user_prefix)) {
@@ -187,6 +208,10 @@ config_handler(void* user, const char* section, const char* name,
 		prompt->assistant[n] = strdup(value);
 		return 1;
 	}
+        MATCH_PROGRAM(prompt, system, safe_strdup);
+        MATCH_PROGRAM(prompt, context, strtocard);
+#undef MATCH_PROGRAM
+        fprintf(stderr, "\nUnknown config value...\n name [%s] value [%s]\n", name, value);
 	return 0;  /* unknown section/name, error */
 }
 
