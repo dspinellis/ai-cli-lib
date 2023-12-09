@@ -188,7 +188,12 @@ then
 
   # Overlay current bash with a new instance, which will include the required
   # environment variables.
-  exec bash
+  if shopt -q login_shell ; then
+    exec -l bash
+  else
+    exec bash
+  fi
+
 fi
 # <<< initialize the ai-cli library <<<
 ```
