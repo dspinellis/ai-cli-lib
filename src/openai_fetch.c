@@ -69,6 +69,13 @@ openai_get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
+
+	program_name = short_program_name();
+
+	if (config->general_verbose) {
+		fprintf(stderr, "Initializing openAI API, program name [%s] system prompt to use [%s]\n",
+		    program_name, config->prompt_system);
+	}
 	safe_asprintf(&authorization, "Authorization: Bearer %s", config->openai_key);
 	return curl_initialize(config);
 }
@@ -84,6 +91,9 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 
 	if (!curl && initialize(config) < 0)
 		return NULL;
+
+	if (config->general_verbose)
+            fprintf(stderr, "... Contacting openai API...\n");
 
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Content-Type: application/json");
