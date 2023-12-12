@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
-      run: sudo apt-get install libcurl4 libcurl4-openssl-dev libjansson4 libjansson-dev libreadline-dev
+      run: sudo apt-get update && sudo apt-get install libcurl4 libcurl4-openssl-dev libjansson4 libjansson-dev libreadline-dev
 
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
