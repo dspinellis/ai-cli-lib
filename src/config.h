@@ -25,19 +25,24 @@
 // Number of supported n-shot prompts
 #define NPROMPTS 3
 
-// Linked list for up to three training shots per program
+// Linked list of system prompt and up to three training shots per program
 typedef struct uaprompt {
-	const char *program;
+	const char *program;		// Prompts' program name
+	const char *system;		// System prompt
 	const char *user[NPROMPTS];
 	const char *assistant[NPROMPTS];
 	struct uaprompt *next;
 } *uaprompt_t;
 
 typedef struct {
+	// Name of running program (not a configuration item)
+	const char *program_name;
+
 	const char *general_logfile;	// File to log requests and responses
 	bool general_timestamp;		// Timestamp log entries
 	bool general_verbose;		// Verbose program operation
 	const char *general_api;	// API to use
+
 	const char *llamacpp_endpoint;		// API endpoint URL
 	// Other llama.cpp parameters in the order documented in
 	// https://github.com/ggerganov/llama.cpp/blob/master/examples/server/README.md
@@ -57,13 +62,17 @@ typedef struct {
 	double llamacpp_mirostat_tau;
 	double llamacpp_mirostat_eta;
 	int llamacpp_seed;
+
 	const char *openai_endpoint;	// API endpoint URL
 	const char *openai_key;		// API key
 	const char *openai_model;	// Model to use (e.g. gpt-3.5)
 	double openai_temperature;	// Generation temperature
+
 	int prompt_context;		// # past prompts to provide as context
 	const char *prompt_system;	// System prompt
+
 	uaprompt_t shots;		// Program-specific training shots
+
 	const char *binding_vi;		// Single character for invoking AI help in Vi mode
 	const char *binding_emacs;	// Character sequence for invoking AI help in Emacs mode
 
@@ -104,4 +113,6 @@ typedef struct {
 void read_config(config_t *config);
 void read_file_config(config_t *config, const char *file_path);
 
-uaprompt_t prompt_find(config_t * config, const char *program_name);
+uaprompt_t prompt_find(config_t *config, const char *program_name);
+char *system_role_get(config_t *config);
+void set_program_name(config_t *config, const char *name);

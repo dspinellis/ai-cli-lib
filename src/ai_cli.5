@@ -1,4 +1,4 @@
-.TH AI_READLINE 5 "2023-09-08" "Diomidis Spinellis" \" -*-
+.TH AI_READLINE 5 "2023-12-12" "Diomidis Spinellis" \" -*-
  \" nroff -*
 
 .SH NAME
@@ -20,7 +20,10 @@ Configuration files are searched and loaded in the order specified in
 Entries in configuration files read later can override previous ones.
 All entries can be overridden by supplying to a program's invocation
 an environment variable named
-\fCAI_CLI_\fIsection\fC_\fIoption\fR.
+\fCAI_CLI_\fIsection\fC_\fIoption\fR,
+where dashes are replaced with underscores.
+For example, an environment variable setting could be
+\fCAI_CLI_prompt_gdb_user_1=Disable breakpoint 3\fP.
 
 In general, system-wide configuration files are used to specify
 default behaviors,

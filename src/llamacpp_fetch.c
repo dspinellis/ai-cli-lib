@@ -29,9 +29,6 @@
 #include "support.h"
 #include "llamacpp_fetch.h"
 
-static char *system_role;
-static const char *program_name;
-
 // Return the response content from a llama.cpp JSON response
 STATIC char *
 llamacpp_get_response_content(const char *json_response)
@@ -76,8 +73,6 @@ llamacpp_get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
-	program_name = short_program_name();
-	safe_asprintf(&system_role, config->prompt_system, program_name);
 	return curl_initialize(config);
 }
 
@@ -114,14 +109,17 @@ llamacpp_fetch(config_t *config, const char *prompt, int history_length)
 	struct string json_request;
 	string_init(&json_request, "{\n");
 
+	char *system_role = system_role_get(config);
 	char *escaped = json_escape(system_role);
+	free(system_role);
+
 	// Remove trailing quote
 	escaped[strlen(escaped) - 1] = '\0';
 	string_appendf(&json_request, "  \"prompt\": %s\\n", escaped);
 
 
 	// Add user and assistant n-shot prompts
-	uaprompt_t uaprompts = prompt_find(config, program_name);
+	uaprompt_t uaprompts = prompt_find(config, short_program_name());
 	for (int i = 0; uaprompts && i < NPROMPTS; i++) {
 		prompt_append(&json_request, "User", uaprompts->user[i]);
 		prompt_append(&json_request, "Assistant", uaprompts->assistant[i]);

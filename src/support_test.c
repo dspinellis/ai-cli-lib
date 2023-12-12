@@ -18,6 +18,8 @@
  *  limitations under the License.
  */
 
+#include <stdlib.h>
+
 #include "CuTest.h"
 #include "support.h"
 
@@ -37,6 +39,17 @@ test_asprintf(CuTest* tc)
 	char *result;
 	safe_asprintf(&result, "a=%d", 42);
 	CuAssertStrEquals(tc, "a=42", result);
+	free(result);
+}
+
+void
+test_range_strdup(CuTest* tc)
+{
+	char string[] = "01234";
+	char *result;
+	result = range_strdup(string + 1, string + 3);
+	CuAssertStrEquals(tc, "12", result);
+	free(result);
 }
 
 void
@@ -75,6 +88,7 @@ cu_support_suite(void)
 	SUITE_ADD_TEST(suite, test_string);
 	SUITE_ADD_TEST(suite, test_short_program_name);
 	SUITE_ADD_TEST(suite, test_json_escape);
+	SUITE_ADD_TEST(suite, test_range_strdup);
 
 	return suite;
 }
