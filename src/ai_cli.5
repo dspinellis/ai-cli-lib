@@ -190,9 +190,12 @@ such as
 .B bash
 or
 .B mysql
-are used to provide multishot example prompts
+are used to provide program-specific configuration
+options for values associated with the
+.B prompt
+section, and also multishot example prompts
 for improving the obtained responses.
-These are provided by
+The multishot example prompts are provided by
 .B ai_cli
 at the beginning of each API request.
 
@@ -234,6 +237,7 @@ vi = V
 emacs = \\C-xa
 
 [prompt-bash]
+context=4
 user-1 = List files in current directory
 assistant-1 = ls
 user-2 = What is the current time and date?
