@@ -39,14 +39,25 @@
 static FILE *logfile;
 CURL *curl;
 
+// Exit with the specified formatted error message
+void
+errorf(const char *format, ...)
+{
+	fprintf(stderr, "ai_cli: ");
+	va_list args;
+	va_start(args, format);
+	vfprintf(stderr, format, args);
+	va_end(args);
+	fputc('\n', stderr);
+	exit(EXIT_FAILURE);
+}
+
 // Exit with a failure if result_ok is false
 static void
 verify(bool result_ok)
 {
-	if (!result_ok) {
-		fprintf(stderr, "ai_cli: memory allocation failed.\n");
-		exit(EXIT_FAILURE);
-	}
+	if (!result_ok)
+		errorf("memory allocation failed.");
 }
 
 void *
@@ -77,6 +88,15 @@ char *
 safe_strdup(const char *s)
 {
 	void *p = strdup(s);
+	verify(p != NULL);
+	return p;
+}
+
+// Return a dnamically allocated string in the range [begin, end)
+char *
+range_strdup(const char *begin, const char *end)
+{
+	void *p = strndup(begin, end - begin);
 	verify(p != NULL);
 	return p;
 }

@@ -29,8 +29,6 @@
 #include "support.h"
 
 static char *authorization;
-static char *system_role;
-static const char *program_name;
 
 // Return the response content from an OpenAI JSON response
 STATIC char *
@@ -71,9 +69,7 @@ openai_get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
-	program_name = short_program_name();
 	safe_asprintf(&authorization, "Authorization: Bearer %s", config->openai_key);
-	safe_asprintf(&system_role, config->prompt_system, program_name);
 	return curl_initialize(config);
 }
 
@@ -104,13 +100,15 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	    config->openai_temperature);
 
 	string_append(&json_request, "  \"messages\": [\n");
+
+	char *system_role = system_role_get(config);
 	string_appendf(&json_request,
 	    "    {\"role\": \"system\", \"content\": %s},\n",
 	    json_escape(system_role));
-
+	free(system_role);
 
 	// Add user and assistant n-shot prompts
-	uaprompt_t uaprompts = prompt_find(config, program_name);
+	uaprompt_t uaprompts = prompt_find(config, short_program_name());
 	for (int i = 0; uaprompts && i < NPROMPTS; i++) {
 		if (uaprompts->user[i])
 			string_appendf(&json_request,

@@ -19,16 +19,21 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "CuTest.h"
 #include "config.h"
 
 static const char *LOCAL_CONFIG = "ai-cli-config";
 
+extern bool starts_with(const char *string, const char *prefix);
+extern char *prompt_id(const char *entry);
+
+
 void
 test_read_config(CuTest* tc)
 {
-	static config_t config;
+	static config_t config = {"gdb"};
 
 	read_file_config(&config, LOCAL_CONFIG);
 
@@ -43,15 +48,42 @@ test_read_config(CuTest* tc)
 	CuAssertTrue(tc, gdb->user[2] == NULL);
 }
 
+void
+test_prompt_id(CuTest* tc)
+{
+	CuAssertStrEquals(tc, "sqlite3", prompt_id("AI_CLI_prompt_sqlite3_system"));
+	CuAssertTrue(tc, prompt_id("AI_CLI_prompt_sqlite3") == NULL);
+}
+
 // Read configuration file overloaded by an environment variable
 void
 test_read_overloaded_config(CuTest* tc)
 {
 	static config_t config;
 
-	putenv("AI_CLI_binding_vi=A");
+	CuAssertTrue(tc, setenv("AI_CLI_binding_vi", "A", 1) == 0);
+	CuAssertTrue(tc, setenv("AI_CLI_prompt_gdb_system", "You are using gdb", 1) == 0);
+	CuAssertTrue(tc, setenv("AI_CLI_prompt_gdb_user_1", "Disable breakpoint 3", 1) == 0);
+	CuAssertTrue(tc, setenv("AI_CLI_prompt_gdb_assistant_1", "delete 3", 1) == 0);
 	read_file_config(&config, LOCAL_CONFIG);
+
+	// Values overloaded or set from environment
 	CuAssertStrEquals(tc, "A", config.binding_vi);
+	uaprompt_t gdb = prompt_find(&config, "gdb");
+	CuAssertPtrNotNull(tc, gdb);
+	CuAssertStrEquals(tc, "You are using gdb", gdb->system);
+	CuAssertStrEquals(tc, "Disable breakpoint 3", gdb->user[0]);
+	CuAssertStrEquals(tc, "delete 3", gdb->assistant[0]);
+
+	// Value from file
+	CuAssertIntEquals(tc, 3, config.prompt_context);
+
+	CuAssertTrue(tc, gdb->user[2] == NULL);
+
+	CuAssertTrue(tc, unsetenv("AI_CLI_binding_vi") == 0);
+	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_gdb_system") == 0);
+	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_gdb_user_1") == 0);
+	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_gdb_assistant_1") == 0);
 }
 
 // Read configuration file and an added environment variable
@@ -60,16 +92,29 @@ test_read_env_added_config(CuTest* tc)
 {
 	static config_t config;
 
-	putenv("AI_CLI_general_logfile=foo.log");
+	CuAssertTrue(tc, setenv("AI_CLI_general_logfile", "foo.log", 1) == 0);
 	read_file_config(&config, LOCAL_CONFIG);
+	// Value added from environment
 	CuAssertStrEquals(tc, "foo.log", config.general_logfile);
+	// Value from file
+	CuAssertIntEquals(tc, 3, config.prompt_context);
+	CuAssertTrue(tc, unsetenv("AI_CLI_general_logfile") == 0);
+}
+
+void
+test_system_role_get(CuTest* tc)
+{
+	static config_t config;
+
+	read_file_config(&config, LOCAL_CONFIG);
+	char *system_role = system_role_get(&config);
+	CuAssertTrue(tc, starts_with(system_role, "You are an assistant"));
+	free(system_role);
 }
 
 void
 test_starts_with(CuTest* tc)
 {
-	extern bool starts_with(const char *string, const char *prefix);
-
 	CuAssertTrue(tc, starts_with("prompt-gdb", "prompt-"));
 	CuAssertTrue(tc, !starts_with("prompt", "prompt-"));
 }
@@ -81,6 +126,7 @@ test_prompt_number(CuTest* tc)
 
 	CuAssertIntEquals(tc, 0, prompt_number("user-1", "user-"));
 	CuAssertIntEquals(tc, 2, prompt_number("user-3", "user-"));
+	CuAssertIntEquals(tc, 2, prompt_number("user_3", "user-"));
 	CuAssertIntEquals(tc, -1, prompt_number("user-4", "user-"));
 	CuAssertIntEquals(tc, -1, prompt_number("user-n4", "user-"));
 	CuAssertIntEquals(tc, -1, prompt_number("user-4n", "user-"));
@@ -89,14 +135,14 @@ test_prompt_number(CuTest* tc)
 void
 test_prompt_add_find(CuTest* tc)
 {
-	extern uaprompt_t prompt_add(config_t * config, const char *program_name);
-	static config_t config;
-	CuAssertTrue(tc, prompt_find(&config, "foo") == NULL);
-	uaprompt_t p = prompt_add(&config, "foo");
-	(void)prompt_add(&config, "bar");
+	extern uaprompt_t prompt_add(config_t *config, const char *program_name);
+	static config_t config = {"testprog"};
+	CuAssertTrue(tc, prompt_find(&config, "otherprog") == NULL);
+	uaprompt_t p = prompt_add(&config, "testprog");
+	(void)prompt_add(&config, "otherprog");
 	CuAssertPtrNotNull(tc, p);
-	uaprompt_t p2 = prompt_find(&config, "foo");
-	CuAssertPtrEquals(tc, p2, p);
+	uaprompt_t p2 = prompt_find(&config, "testprog");
+	CuAssertPtrEquals(tc, p, p2);
 }
 
 CuSuite*
@@ -106,10 +152,12 @@ cu_config_suite(void)
 
 	SUITE_ADD_TEST(suite, test_starts_with);
 	SUITE_ADD_TEST(suite, test_prompt_number);
+	SUITE_ADD_TEST(suite, test_prompt_id);
 	SUITE_ADD_TEST(suite, test_prompt_add_find);
 	SUITE_ADD_TEST(suite, test_read_config);
 	SUITE_ADD_TEST(suite, test_read_overloaded_config);
 	SUITE_ADD_TEST(suite, test_read_env_added_config);
+	SUITE_ADD_TEST(suite, test_system_role_get);
 
 	return suite;
 }
