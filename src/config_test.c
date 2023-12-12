@@ -62,6 +62,8 @@ test_read_overloaded_config(CuTest* tc)
 	static config_t config;
 
 	CuAssertTrue(tc, setenv("AI_CLI_binding_vi", "A", 1) == 0);
+	CuAssertTrue(tc, setenv("AI_CLI_prompt_bash_system", "You are using bash", 1) == 0);
+	CuAssertTrue(tc, setenv("AI_CLI_prompt_bc_system", "You are using bc", 1) == 0);
 	CuAssertTrue(tc, setenv("AI_CLI_prompt_gdb_system", "You are using gdb", 1) == 0);
 	CuAssertTrue(tc, setenv("AI_CLI_prompt_gdb_user_1", "Disable breakpoint 3", 1) == 0);
 	CuAssertTrue(tc, setenv("AI_CLI_prompt_gdb_assistant_1", "delete 3", 1) == 0);
@@ -71,7 +73,7 @@ test_read_overloaded_config(CuTest* tc)
 	CuAssertStrEquals(tc, "A", config.binding_vi);
 	uaprompt_t gdb = prompt_find(&config, "gdb");
 	CuAssertPtrNotNull(tc, gdb);
-	CuAssertStrEquals(tc, "You are using gdb", gdb->system);
+	CuAssertStrEquals(tc, "You are using gdb", config.prompt_system);
 	CuAssertStrEquals(tc, "Disable breakpoint 3", gdb->user[0]);
 	CuAssertStrEquals(tc, "delete 3", gdb->assistant[0]);
 
@@ -81,7 +83,9 @@ test_read_overloaded_config(CuTest* tc)
 	CuAssertTrue(tc, gdb->user[2] == NULL);
 
 	CuAssertTrue(tc, unsetenv("AI_CLI_binding_vi") == 0);
+	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_bash_system") == 0);
 	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_gdb_system") == 0);
+	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_bc_system") == 0);
 	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_gdb_user_1") == 0);
 	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_gdb_assistant_1") == 0);
 }

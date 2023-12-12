@@ -43,7 +43,7 @@ CURL *curl;
 void
 errorf(const char *format, ...)
 {
-	fprintf(stderr, "ai_cli: ");
+	fprintf(stderr, "\nai_cli: ");
 	va_list args;
 	va_start(args, format);
 	vfprintf(stderr, format, args);

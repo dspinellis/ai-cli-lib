@@ -127,14 +127,16 @@ strtobool(const char *string)
 
 /*
  * Set configuration values from environment variables or to the
- * given configuration file value.
+ * given configuration file value for non-program specific configuration
+ * values..
  * If section is NULL, then set all (non program-specific) configuration
  * variables from any environment variables corresponding to them
  * (AI_CLI_section_name).  In this case the section, name, and value parameters
  * are not used.
+ *
  * If section is not NULL, set the configuration value from
  * the specified section, name, and value.
- * Returns 1 if success 0 otherwise
+ * In this case return 1 if success 0 otherwise.
  */
 static int
 fixed_matcher(config_t *pconfig, const char* section,
@@ -147,7 +149,7 @@ fixed_matcher(config_t *pconfig, const char* section,
 	 * The configuration or environment string value is converted to the
 	 * reqired type using the supplied function fn.
 	 */
-	#define MATCH(s, n, fn) do { \
+#define MATCH(s, n, fn) do { \
 		if (section) { \
 			if (strcmp(section, #s) == 0 && strcmp(name, #n) == 0) { \
 				pconfig->s ## _ ## n = fn(value); \
@@ -161,7 +163,7 @@ fixed_matcher(config_t *pconfig, const char* section,
 				pconfig->s ## _ ## n ## _set = true; \
 			} \
 		} \
-	} while(0);
+	} while(0)
 
 	MATCH(general, verbose, strtobool);
 	MATCH(general, logfile, safe_strdup);
@@ -201,6 +203,36 @@ fixed_matcher(config_t *pconfig, const char* section,
 }
 
 /*
+ * Set program-specific prompt configuration values.
+ *
+ * Return 1 if success 0 otherwise.
+ */
+static int
+fixed_program_matcher(config_t *pconfig, const char* name, const char* value)
+{
+	/*
+	 * Set the specified prompt configuration name, n, from the
+	 * corresponding given configuration value.
+	 * The value is converted to the required type and storage
+	 * using the supplied function fn.
+	 */
+#define MATCH_PROGRAM(n, fn) do { \
+		if (strcmp(name, #n) == 0) { \
+			pconfig->prompt_ ## n = fn(value); \
+			pconfig->prompt_ ## n ## _set = true; \
+			if (pconfig->general_verbose) \
+				fprintf(stderr, "Overriding general config `%s' with program `%s'-specific value `%s'\n", #n, pconfig->program_name, value); \
+			return 1; \
+		} \
+	} while (0)
+        MATCH_PROGRAM(system, safe_strdup);
+        MATCH_PROGRAM(context, strtocard);
+
+	return 0;
+}
+
+
+/*
  * Callback for the configuration .ini file reader
  * Called with the section, name, and value read
  */
@@ -217,57 +249,44 @@ config_handler(void* user, const char* section, const char* name,
 		return 1;
 
 	if (!starts_with(section, prompt_ini_prefix))
-		return 0;  /* unknown section/name, error */
-        }
-	/* program specific section. It can override some global config values
-	 * 
+		errorf("Unknown section in configuration file, section [%s]", section);
+
+	/*
+	 * A program specific section. It can provide user or assistant
+	 * n-shot prompt, such as:
+	 *
 	 * [prompt-gdb]
-         * A user or assistant n-short prompt, such as:
 	 * user-1 = Disable breakpoint number 4
-	 * or a program-specific system prompt, such as:
+	 *
+	 * or a program-specific values, such as:
+	 *
 	 * [prompt-bc]
 	 * system = The bc command is already invoked
+	 * context = 1
 	 */
 	const char *program_name = section + sizeof(prompt_ini_prefix) - 1;
 	uaprompt_t prompt = prompt_find(pconfig, program_name);
-        
-#define MATCH_PROGRAM(s, n, fn)            \
-            if (strcmp(name, #n) == 0) {  \
-                pconfig->s ## _ ## n = fn(value);                       \
-                pconfig->s ## _ ## n ## _set = true;                    \
-                if (pconfig->general_verbose) {                         \
-                    fprintf(stderr, "   Overriding general config [%s] with program specific [%s] value [%s]\n",\
-                            #n, program_name, value);                   \
-                }\
-                return 1;                                               \
-            }                                                           
-
 
 	if (!prompt)
 		prompt = prompt_add(pconfig, program_name);
 
-	if (strcmp(name, "system") == 0) {
-		prompt->system = strdup(value);
+	if (fixed_program_matcher(pconfig, name, value))
 		return 1;
-	}
 
 	if (starts_with(name, user_ini_prefix)) {
 		int n = prompt_number(name, user_ini_prefix);
 		if (n == -1)
-			return 0; // Bad number error
+			errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
 		prompt->user[n] = strdup(value);
 		return 1;
 	} else if (starts_with(name, assistant_ini_prefix)) {
 		int n = prompt_number(name, assistant_ini_prefix);
 		if (n == -1)
-			return 0; // Bad number error
+			errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
 		prompt->assistant[n] = strdup(value);
 		return 1;
 	}
-        MATCH_PROGRAM(prompt, system, safe_strdup);
-        MATCH_PROGRAM(prompt, context, strtocard);
-#undef MATCH_PROGRAM
-        fprintf(stderr, "\nUnknown config value...\n name [%s] value [%s]\n", name, value);
+	errorf("Unknown configuration section [%s], name `%s'.", section, name);
 	return 0;  /* unknown section/name, error */
 }
 
@@ -286,7 +305,7 @@ static void
 env_override(config_t *config)
 {
 	// Match all fixed configuration values
-	fixed_matcher(config, NULL, NULL, NULL);
+	(void)fixed_matcher(config, NULL, NULL, NULL);
 
 	/*
 	 * Now look for prompt configurations in environment variables.
@@ -317,9 +336,7 @@ env_override(config_t *config)
 		if (!prompt)
 			prompt = prompt_add(config, program_name);
 
-		if (strcmp(prompt_name, "system") == 0) {
-			prompt->system = strdup(prompt_value);
-		} else if (starts_with(prompt_name, user_env_prefix)) {
+		if (starts_with(prompt_name, user_env_prefix)) {
 			int n = prompt_number(prompt_name, user_env_prefix);
 			if (n == -1)
 				errorf("Invalid prompt value in environment variable %s", entry);
@@ -331,7 +348,8 @@ env_override(config_t *config)
 				errorf("Invalid prompt value in environment variable %s", entry);
 			else
 				prompt->assistant[n] = strdup(prompt_value);
-		}
+		} else if (!fixed_program_matcher(config, prompt_name, prompt_value))
+			errorf("Invalid name in environment variable %s", entry);
 		free(program_name);
 		free(prompt_name);
 	}

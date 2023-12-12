@@ -73,6 +73,9 @@ llamacpp_get_response_content(const char *json_response)
 static int
 initialize(config_t *config)
 {
+	if (config->general_verbose)
+		fprintf(stderr, "\nInitializing Llamacpp API, program name [%s] system prompt to use [%s]\n",
+		    short_program_name(), config->prompt_system);
 	return curl_initialize(config);
 }
 
@@ -99,6 +102,9 @@ llamacpp_fetch(config_t *config, const char *prompt, int history_length)
 
 	if (!curl && initialize(config) < 0)
 		return NULL;
+
+	if (config->general_verbose)
+		fprintf(stderr, "\nContacting Llamacpp API...\n");
 
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Content-Type: application/json");

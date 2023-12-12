@@ -28,7 +28,6 @@
 // Linked list of system prompt and up to three training shots per program
 typedef struct uaprompt {
 	const char *program;		// Prompts' program name
-	const char *system;		// System prompt
 	const char *user[NPROMPTS];
 	const char *assistant[NPROMPTS];
 	struct uaprompt *next;
