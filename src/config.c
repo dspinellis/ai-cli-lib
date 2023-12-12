@@ -77,34 +77,6 @@ prompt_id(const char *entry)
 	return range_strdup(id_begin, id_end);
 }
 
-
-/*
- * Return a pointer to the prompt details for program being executes
- * program, or NULL if no such details are recorded.
- */
-uaprompt_t
-prompt_find(config_t *config, const char *program_name)
-{
-	for (uaprompt_t p = config->shots; p; p = p->next)
-		if (strcmp(p->program, program_name) == 0)
-			return p;
-	return NULL;
-}
-
-/*
- * Return a pointer to the newly added prompt details for the specified
- * program.
- */
-uaprompt_t
-prompt_add(config_t *config, const char *program_name)
-{
-	uaprompt_t p = safe_calloc(1, sizeof(*p));
-	p->program = safe_strdup(program_name);
-	p->next = config->shots;
-	config->shots = p;
-	return p;
-}
-
 /*
  * Return the 0-based prompt ordinal number n associated with the specified
  * prefixed name.  The name string is suffixed with -n.
@@ -265,10 +237,10 @@ config_handler(void* user, const char* section, const char* name,
 	 * context = 1
 	 */
 	const char *program_name = section + sizeof(prompt_ini_prefix) - 1;
-	uaprompt_t prompt = prompt_find(pconfig, program_name);
 
-	if (!prompt)
-		prompt = prompt_add(pconfig, program_name);
+	// Skip matching of programs other than ours
+	if (strcmp(program_name, pconfig->program_name) != 0)
+		return 1;
 
 	if (fixed_program_matcher(pconfig, name, value))
 		return 1;
@@ -277,13 +249,13 @@ config_handler(void* user, const char* section, const char* name,
 		int n = prompt_number(name, user_ini_prefix);
 		if (n == -1)
 			errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
-		prompt->user[n] = strdup(value);
+		pconfig->prompt_user[n] = strdup(value);
 		return 1;
 	} else if (starts_with(name, assistant_ini_prefix)) {
 		int n = prompt_number(name, assistant_ini_prefix);
 		if (n == -1)
 			errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
-		prompt->assistant[n] = strdup(value);
+		pconfig->prompt_assistant[n] = strdup(value);
 		return 1;
 	}
 	errorf("Unknown configuration section [%s], name `%s'.", section, name);
@@ -324,6 +296,13 @@ env_override(config_t *config)
 		char *program_name = prompt_id(entry);
 		if (!program_name)
 			errorf("Missing program identifier in prompt environment variable %s", entry);
+
+		// Skip matching of programs other than ours
+		if (strcmp(program_name, config->program_name) != 0) {
+			free(program_name);
+			continue;
+		}
+
 		char *prompt_name_begin = entry + sizeof(env_prompt_prefix) +
 			strlen(program_name);
 		const char *prompt_name_end = strchr(prompt_name_begin, '=');
@@ -332,22 +311,18 @@ env_override(config_t *config)
 		char *prompt_name = range_strdup(prompt_name_begin, prompt_name_end);
 		const char *prompt_value = prompt_name_end + 1;
 
-		uaprompt_t prompt = prompt_find(config, program_name);
-		if (!prompt)
-			prompt = prompt_add(config, program_name);
-
 		if (starts_with(prompt_name, user_env_prefix)) {
 			int n = prompt_number(prompt_name, user_env_prefix);
 			if (n == -1)
 				errorf("Invalid prompt value in environment variable %s", entry);
 			else
-				prompt->user[n] = strdup(prompt_value);
+				config->prompt_user[n] = strdup(prompt_value);
 		} else if (starts_with(prompt_name, assistant_env_prefix)) {
 			int n = prompt_number(prompt_name, assistant_env_prefix);
 			if (n == -1)
 				errorf("Invalid prompt value in environment variable %s", entry);
 			else
-				prompt->assistant[n] = strdup(prompt_value);
+				config->prompt_assistant[n] = strdup(prompt_value);
 		} else if (!fixed_program_matcher(config, prompt_name, prompt_value))
 			errorf("Invalid name in environment variable %s", entry);
 		free(program_name);

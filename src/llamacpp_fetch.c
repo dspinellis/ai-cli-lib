@@ -125,10 +125,9 @@ llamacpp_fetch(config_t *config, const char *prompt, int history_length)
 
 
 	// Add user and assistant n-shot prompts
-	uaprompt_t uaprompts = prompt_find(config, short_program_name());
-	for (int i = 0; uaprompts && i < NPROMPTS; i++) {
-		prompt_append(&json_request, "User", uaprompts->user[i]);
-		prompt_append(&json_request, "Assistant", uaprompts->assistant[i]);
+	for (int i = 0; i < NPROMPTS; i++) {
+		prompt_append(&json_request, "User", config->prompt_user[i]);
+		prompt_append(&json_request, "Assistant", config->prompt_assistant[i]);
 	}
 
 	// Add history prompts as context

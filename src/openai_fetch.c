@@ -115,16 +115,15 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	free(system_role);
 
 	// Add user and assistant n-shot prompts
-	uaprompt_t uaprompts = prompt_find(config, short_program_name());
-	for (int i = 0; uaprompts && i < NPROMPTS; i++) {
-		if (uaprompts->user[i])
+	for (int i = 0; i < NPROMPTS; i++) {
+		if (config->prompt_user[i])
 			string_appendf(&json_request,
 			    "    {\"role\": \"user\", \"content\": %s},\n",
-			    json_escape(uaprompts->user[i]));
-		if (uaprompts->assistant[i])
+			    json_escape(config->prompt_user[i]));
+		if (config->prompt_assistant[i])
 			string_appendf(&json_request,
 			    "    {\"role\": \"assistant\", \"content\": %s},\n",
-			    json_escape(uaprompts->assistant[i]));
+			    json_escape(config->prompt_assistant[i]));
 	}
 
 	// Add history prompts as context

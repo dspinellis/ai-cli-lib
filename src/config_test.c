@@ -41,11 +41,9 @@ test_read_config(CuTest* tc)
 	CuAssertPtrNotNull(tc, config.openai_endpoint);
 	CuAssertPtrNotNull(tc, config.prompt_system);
 
-	uaprompt_t gdb = prompt_find(&config, "gdb");
-	CuAssertPtrNotNull(tc, gdb);
-	CuAssertStrEquals(tc, "Disable breakpoint number 4", gdb->user[0]);
-	CuAssertStrEquals(tc, "delete 4", gdb->assistant[0]);
-	CuAssertTrue(tc, gdb->user[2] == NULL);
+	CuAssertStrEquals(tc, "Disable breakpoint number 4", config.prompt_user[0]);
+	CuAssertStrEquals(tc, "delete 4", config.prompt_assistant[0]);
+	CuAssertTrue(tc, config.prompt_user[2] == NULL);
 }
 
 void
@@ -59,7 +57,7 @@ test_prompt_id(CuTest* tc)
 void
 test_read_overloaded_config(CuTest* tc)
 {
-	static config_t config;
+	static config_t config = {"gdb"};
 
 	CuAssertTrue(tc, setenv("AI_CLI_binding_vi", "A", 1) == 0);
 	CuAssertTrue(tc, setenv("AI_CLI_prompt_bash_system", "You are using bash", 1) == 0);
@@ -71,16 +69,14 @@ test_read_overloaded_config(CuTest* tc)
 
 	// Values overloaded or set from environment
 	CuAssertStrEquals(tc, "A", config.binding_vi);
-	uaprompt_t gdb = prompt_find(&config, "gdb");
-	CuAssertPtrNotNull(tc, gdb);
 	CuAssertStrEquals(tc, "You are using gdb", config.prompt_system);
-	CuAssertStrEquals(tc, "Disable breakpoint 3", gdb->user[0]);
-	CuAssertStrEquals(tc, "delete 3", gdb->assistant[0]);
+	CuAssertStrEquals(tc, "Disable breakpoint 3", config.prompt_user[0]);
+	CuAssertStrEquals(tc, "delete 3", config.prompt_assistant[0]);
 
 	// Value from file
 	CuAssertIntEquals(tc, 3, config.prompt_context);
 
-	CuAssertTrue(tc, gdb->user[2] == NULL);
+	CuAssertTrue(tc, config.prompt_user[2] == NULL);
 
 	CuAssertTrue(tc, unsetenv("AI_CLI_binding_vi") == 0);
 	CuAssertTrue(tc, unsetenv("AI_CLI_prompt_bash_system") == 0);
@@ -136,19 +132,6 @@ test_prompt_number(CuTest* tc)
 	CuAssertIntEquals(tc, -1, prompt_number("user-4n", "user-"));
 }
 
-void
-test_prompt_add_find(CuTest* tc)
-{
-	extern uaprompt_t prompt_add(config_t *config, const char *program_name);
-	static config_t config = {"testprog"};
-	CuAssertTrue(tc, prompt_find(&config, "otherprog") == NULL);
-	uaprompt_t p = prompt_add(&config, "testprog");
-	(void)prompt_add(&config, "otherprog");
-	CuAssertPtrNotNull(tc, p);
-	uaprompt_t p2 = prompt_find(&config, "testprog");
-	CuAssertPtrEquals(tc, p, p2);
-}
-
 CuSuite*
 cu_config_suite(void)
 {
@@ -157,7 +140,6 @@ cu_config_suite(void)
 	SUITE_ADD_TEST(suite, test_starts_with);
 	SUITE_ADD_TEST(suite, test_prompt_number);
 	SUITE_ADD_TEST(suite, test_prompt_id);
-	SUITE_ADD_TEST(suite, test_prompt_add_find);
 	SUITE_ADD_TEST(suite, test_read_config);
 	SUITE_ADD_TEST(suite, test_read_overloaded_config);
 	SUITE_ADD_TEST(suite, test_read_env_added_config);

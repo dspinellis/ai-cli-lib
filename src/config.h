@@ -25,14 +25,6 @@
 // Number of supported n-shot prompts
 #define NPROMPTS 3
 
-// Linked list of system prompt and up to three training shots per program
-typedef struct uaprompt {
-	const char *program;		// Prompts' program name
-	const char *user[NPROMPTS];
-	const char *assistant[NPROMPTS];
-	struct uaprompt *next;
-} *uaprompt_t;
-
 typedef struct {
 	// Name of running program (not a configuration item)
 	const char *program_name;
@@ -69,8 +61,9 @@ typedef struct {
 
 	int prompt_context;		// # past prompts to provide as context
 	const char *prompt_system;	// System prompt
-
-	uaprompt_t shots;		// Program-specific training shots
+	// Up to three training shots for a specific program
+	const char *prompt_user[NPROMPTS];
+	const char *prompt_assistant[NPROMPTS];
 
 	const char *binding_vi;		// Single character for invoking AI help in Vi mode
 	const char *binding_emacs;	// Character sequence for invoking AI help in Emacs mode
@@ -112,6 +105,5 @@ typedef struct {
 void read_config(config_t *config);
 void read_file_config(config_t *config, const char *file_path);
 
-uaprompt_t prompt_find(config_t *config, const char *program_name);
 char *system_role_get(config_t *config);
 void set_program_name(config_t *config, const char *name);
