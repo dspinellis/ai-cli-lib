@@ -222,7 +222,7 @@ config_handler(void* user, const char* section, const char* name,
 		return 1;
 
 	if (!starts_with(section, prompt_ini_prefix))
-		errorf("Unknown section in configuration file, section [%s]", section);
+		errorf("Unknown configuration section [%s], name `%s'.", section, name);
 
 	/*
 	 * A program specific section. It can provide user or assistant
