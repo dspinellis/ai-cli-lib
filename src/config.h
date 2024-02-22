@@ -33,6 +33,7 @@ typedef struct {
 	bool general_timestamp;		// Timestamp log entries
 	bool general_verbose;		// Verbose program operation
 	const char *general_api;	// API to use
+	const char *general_response_prefix; // Added in pasted responses
 
 	const char *llamacpp_endpoint;		// API endpoint URL
 	// Other llama.cpp parameters in the order documented in
@@ -73,6 +74,7 @@ typedef struct {
 	bool general_timestamp_set;
 	bool general_verbose_set;
 	bool general_api_set;
+	bool general_response_prefix_set;
 	bool parameters_set;
 	bool llamacpp_endpoint_set;
 	bool llamacpp_temperature_set;

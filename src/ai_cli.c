@@ -73,6 +73,10 @@ query_ai(int count, int key)
 	rl_begin_undo_group();
 	rl_delete_text(0, *rl_end_ptr);
 	*rl_point_ptr = 0;
+	if (config.general_response_prefix_set) {
+		rl_insert_text(config.general_response_prefix);
+		rl_insert_text(" ");
+	}
 	rl_insert_text(response);
 	rl_end_undo_group();
 	prev_response = response;

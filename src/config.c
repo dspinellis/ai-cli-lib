@@ -139,6 +139,7 @@ fixed_matcher(config_t *pconfig, const char* section,
 
 	MATCH(general, verbose, strtobool);
 	MATCH(general, logfile, safe_strdup);
+	MATCH(general, response_prefix, safe_strdup);
 	MATCH(general, timestamp, strtobool);
 	MATCH(general, api, safe_strdup);
 
