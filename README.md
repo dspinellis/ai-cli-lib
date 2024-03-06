@@ -121,6 +121,16 @@ the program's name appears to The _ai-cli_ library as `rlwrap`.
 * To obtain AI help, enter a natural language prompt and press `^X-a` (Ctrl-X followed by a)
   in the (default) _Emacs_ key binding mode or `V` if you have configured
   _vi_ key bindings.
+* Keep in mind that by default _ai-cli-lib_ is sending previously entered
+  commands as context to the model engine you are using.
+  This may leak secrets that you enter, for example by setting an environment
+  variable to contain a key or by configuring a database password.
+  To avoid this problem configure the `context` setting to zero,
+  or use the command-line program's offered method to avoid storing
+  an entered line.
+  For instance, in _bash_ you can do this by starting the line with a
+  space character.
+
 
 ### Note for macOS users
 Note that macOS ships with the _editline_ line-editing library,
