@@ -193,12 +193,17 @@ string_appendf(string_t *s, const char *fmt, ...)
 const char *
 short_program_name(void)
 {
+	const char *name;
 #ifdef MACOS
-	return getprogname();
+	name = getprogname();
 #else
 	// GNU libc-specific; defined in errno.h
-	return program_invocation_short_name;
+	name = program_invocation_short_name;
 #endif
+	// Skip leading "-" of login shell (e.g. "-bash")
+	if (name && name[0] == '-')
+		return name + 1;
+	return name;
 }
 
 // Show a message during readline processing
