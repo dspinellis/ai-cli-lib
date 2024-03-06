@@ -137,40 +137,50 @@ fixed_matcher(config_t *pconfig, const char* section,
 		} \
 	} while(0)
 
-	MATCH(general, verbose, strtobool);
+	// In section, key alphabetic order
+	MATCH(anthropic, endpoint, safe_strdup);
+	MATCH(anthropic, key, safe_strdup);
+	MATCH(anthropic, max_tokens, atoi);
+	MATCH(anthropic, model, safe_strdup);
+	MATCH(anthropic, temperature, atof);
+	MATCH(anthropic, top_k, atoi);
+	MATCH(anthropic, top_p, atof);
+	MATCH(anthropic, version, safe_strdup);
+
+	MATCH(binding, emacs, safe_strdup);
+	MATCH(binding, vi, safe_strdup);
+
+	MATCH(general, api, safe_strdup);
 	MATCH(general, logfile, safe_strdup);
 	MATCH(general, response_prefix, safe_strdup);
 	MATCH(general, timestamp, strtobool);
-	MATCH(general, api, safe_strdup);
+	MATCH(general, verbose, strtobool);
+
+	MATCH(llamacpp, endpoint, safe_strdup);
+	MATCH(llamacpp, frequency_penalty, atof);
+	MATCH(llamacpp, mirostat, atoi);
+	MATCH(llamacpp, mirostat_eta, atof);
+	MATCH(llamacpp, mirostat_tau, atof);
+	MATCH(llamacpp, n_keep, atoi);
+	MATCH(llamacpp, n_predict, atoi);
+	MATCH(llamacpp, penalize_nl, strtobool);
+	MATCH(llamacpp, presence_penalty, atof);
+	MATCH(llamacpp, repeat_last_n, atoi);
+	MATCH(llamacpp, repeat_penalty, atof);
+	MATCH(llamacpp, seed, atoi);
+	MATCH(llamacpp, temperature, atof);
+	MATCH(llamacpp, tfs_z, atof);
+	MATCH(llamacpp, top_k, atoi);
+	MATCH(llamacpp, top_p, atof);
+	MATCH(llamacpp, typical_p, atof);
 
 	MATCH(openai, endpoint, safe_strdup);
 	MATCH(openai, key, safe_strdup);
 	MATCH(openai, model, safe_strdup);
 	MATCH(openai, temperature, atof);
 
-	MATCH(binding, vi, safe_strdup);
-	MATCH(binding, emacs, safe_strdup);
-
 	MATCH(prompt, context, strtocard);
 	MATCH(prompt, system, safe_strdup);
-
-	MATCH(llamacpp, endpoint, safe_strdup);
-	MATCH(llamacpp, temperature, atof);
-	MATCH(llamacpp, top_k, atoi);
-	MATCH(llamacpp, top_p, atof);
-	MATCH(llamacpp, n_predict, atoi);
-	MATCH(llamacpp, n_keep, atoi);
-	MATCH(llamacpp, tfs_z, atof);
-	MATCH(llamacpp, typical_p, atof);
-	MATCH(llamacpp, repeat_penalty, atof);
-	MATCH(llamacpp, repeat_last_n, atoi);
-	MATCH(llamacpp, penalize_nl, strtobool);
-	MATCH(llamacpp, presence_penalty, atof);
-	MATCH(llamacpp, frequency_penalty, atof);
-	MATCH(llamacpp, mirostat, atoi);
-	MATCH(llamacpp, mirostat_tau, atof);
-	MATCH(llamacpp, mirostat_eta, atof);
-	MATCH(llamacpp, seed, atoi);
 
 	return 0;
 }
@@ -282,7 +292,7 @@ env_override(config_t *config)
 
 	/*
 	 * Now look for prompt configurations in environment variables.
-	 * A user or assistant n-short prompt, such as:
+	 * A user or assistant n-shot prompt, such as:
 	 * AI_CLI_prompt_gdb_user_1=Disable breakpoint number 4
 	 * or a program-specific system prompt, such as:
 	 * AI_CLI_prompt_bc_system=The bc command is already invoked

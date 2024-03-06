@@ -28,6 +28,8 @@
 #include <readline/history.h>
 
 #include "config.h"
+
+#include "anthropic_fetch.h"
 #include "llamacpp_fetch.h"
 #include "openai_fetch.h"
 
@@ -133,6 +135,11 @@ setup(void)
 		fetch = openai_fetch;
 		REQUIRE(openai, key);
 		REQUIRE(openai, endpoint);
+	} else if (strcmp(config.general_api, "anthropic") == 0) {
+		fetch = anthropic_fetch;
+		REQUIRE(anthropic, key);
+		REQUIRE(anthropic, endpoint);
+		REQUIRE(anthropic, version);
 	} else if (strcmp(config.general_api, "llamacpp") == 0) {
 		fetch = llamacpp_fetch;
 		REQUIRE(llamacpp, endpoint);

@@ -13,6 +13,15 @@ temperature = 0.7
 ; User-specific: add it in a local protected file
 ; key =
 
+[anthropic]
+endpoint = https://api.anthropic.com/v1/messages
+version = 2023-06-01
+; Most capable. Cost (3/2024): Input: $15 / MTok, Output: $75 / MTok
+model = claude-3-opus-20240229
+; User-specific: add it in a local protected file
+; key =
+max_tokens = 256
+
 [llamacpp]
 endpoint = http://localhost:8080/completion
 

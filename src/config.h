@@ -29,11 +29,30 @@ typedef struct {
 	// Name of running program (not a configuration item)
 	const char *program_name;
 
+	// All settings are listed in section, key alphabetic order
+	// (Unless otherwise specified)
+
+	// Anthropic API
+	// See https://docs.anthropic.com/claude/reference/messages_post
+	const char *anthropic_endpoint;	// API endpoint URL
+	const char *anthropic_key;	// API key
+	int anthropic_max_tokens;	// Max output tokens
+	const char *anthropic_model;	// Name (e.g. claude-3-opus-20240229)
+	double anthropic_temperature;
+	int anthropic_top_k;
+	double anthropic_top_p;
+	const char *anthropic_version;	// API version, e.g. 2023-06-01
+
+	// Single character for invoking AI help in Vi mode
+	const char *binding_vi;
+	// Character sequence for invoking AI help in Emacs mode
+	const char *binding_emacs;
+
+	const char *general_api;	// API to use
 	const char *general_logfile;	// File to log requests and responses
+	const char *general_response_prefix; // Added in pasted responses
 	bool general_timestamp;		// Timestamp log entries
 	bool general_verbose;		// Verbose program operation
-	const char *general_api;	// API to use
-	const char *general_response_prefix; // Added in pasted responses
 
 	const char *llamacpp_endpoint;		// API endpoint URL
 	// Other llama.cpp parameters in the order documented in
@@ -62,46 +81,56 @@ typedef struct {
 
 	int prompt_context;		// # past prompts to provide as context
 	const char *prompt_system;	// System prompt
+
 	// Up to three training shots for a specific program
 	const char *prompt_user[NPROMPTS];
 	const char *prompt_assistant[NPROMPTS];
 
-	const char *binding_vi;		// Single character for invoking AI help in Vi mode
-	const char *binding_emacs;	// Character sequence for invoking AI help in Emacs mode
-
 	// All the above parameters; set to true is set by configuration
+	// All listed in section, key alphabetic order
+	bool anthropic_endpoint_set;
+	bool anthropic_key_set;
+	bool anthropic_max_tokens_set;
+	bool anthropic_model_set;
+	bool anthropic_temperature_set;
+	bool anthropic_top_k_set;
+	bool anthropic_top_p_set;
+	bool anthropic_version_set;
+
+	bool binding_emacs_set;
+	bool binding_vi_set;
+
+	bool general_api_set;
 	bool general_logfile_set;
+	bool general_response_prefix_set;
 	bool general_timestamp_set;
 	bool general_verbose_set;
-	bool general_api_set;
-	bool general_response_prefix_set;
-	bool parameters_set;
+
 	bool llamacpp_endpoint_set;
-	bool llamacpp_temperature_set;
-	bool llamacpp_top_k_set;
-	bool llamacpp_top_p_set;
-	bool llamacpp_n_predict_set;
-	bool llamacpp_n_keep_set;
-	bool llamacpp_tfs_z_set;
-	bool llamacpp_typical_p_set;
-	bool llamacpp_repeat_penalty_set;
-	bool llamacpp_repeat_last_n_set;
-	bool llamacpp_penalize_nl_set;
-	bool llamacpp_presence_penalty_set;
 	bool llamacpp_frequency_penalty_set;
+	bool llamacpp_mirostat_eta_set;
 	bool llamacpp_mirostat_set;
 	bool llamacpp_mirostat_tau_set;
-	bool llamacpp_mirostat_eta_set;
+	bool llamacpp_n_keep_set;
+	bool llamacpp_n_predict_set;
+	bool llamacpp_penalize_nl_set;
+	bool llamacpp_presence_penalty_set;
+	bool llamacpp_repeat_last_n_set;
+	bool llamacpp_repeat_penalty_set;
 	bool llamacpp_seed_set;
+	bool llamacpp_temperature_set;
+	bool llamacpp_tfs_z_set;
+	bool llamacpp_top_k_set;
+	bool llamacpp_top_p_set;
+	bool llamacpp_typical_p_set;
+
 	bool openai_endpoint_set;
 	bool openai_key_set;
 	bool openai_model_set;
 	bool openai_temperature_set;
+
 	bool prompt_context_set;
 	bool prompt_system_set;
-	bool shots_set;
-	bool binding_vi_set;
-	bool binding_emacs_set;
 } config_t;
 
 void read_config(config_t *config);

@@ -5,7 +5,8 @@ The __ai-cli__
 library detects programs that offer interactive command-line editing
 through the __readline__ library,
 and modifies their interface to allow obtaining help from a GPT
-large language model, such as OpenAI's or one provided through a
+large language model server, such as Anthropic's or OpenAI's,
+or one provided through a
 [llama.cpp](https://github.com/ggerganov/llama.cpp) server.
 Think of it as a command line copilot.
 
@@ -85,15 +86,20 @@ make install PREFIX=~
   the Homebrew library directory, e.g.
   `export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH`.
 * Perform one of the following.
-  * [Obtain your OpenAI API key](https://platform.openai.com/api-keys),
+  * Obtain your
+    [Anthropic API key](https://console.anthropic.com/settings/keys)
+    or
+    [OpenAI API key](https://platform.openai.com/api-keys)
     and configure it in the `.aicliconfig` file in your home directory.
-    This is done with a `key={key}` entry in the file's `[openai]` section.
-    In addition, add `api=openai` in the file's `[general]` section.
+    This is done with a `key={key}` entry in the file's
+    `[anthropic]` or `[openai]` section.
+    In addition, add `api=anthropic` or `api=openai` in the file's
+    `[general]` section.
     See the file [ai-cli-config](src/ai-cli-config) to understand how configuration
     files are structured.
+    Anthropic currently provides free trial credits to new users.
     Note that OpenAI API access requires a different (usage-based)
     subscription from the ChatGPT one.
-    OpenAI currently provides free trial credits to new users.
   * Configure a [llama.cpp](https://github.com/ggerganov/llama.cpp) server
     and list its `endpoint` (e.g. `endpoint=http://localhost:8080/completion`
     in the configuration file's `[llamacpp]` section.

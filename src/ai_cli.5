@@ -101,8 +101,45 @@ followed by a space, before being added to the edit buffer.
 \fItimestamp=\fR
 .RS 4
 Setting \fItimestamp\fP to \fItrue\fP will cause the log file
-to include the timesamp (in ISO format) of each request or response.
+to include the timestamp (in ISO format) of each request or response.
 .RE
+
+.SH [ANTHROPIC] SECTION OPTIONS
+These options tailor the behavior of queries made to the Anthropic servers.
+Refer to the
+.UR "https://docs.anthropic.com/claude/reference/messages_post"
+Anthropic API documentation
+.UE
+for more details.
+
+.PP
+\fImodel=\fR
+.RS 4
+The Anthropic model to use, e.g.
+.IR claude-3-opus-20240229 .
+This affects performance and pricing.
+.RE
+.PP
+\fIendpoint=\fR
+.RS 4
+The URL of the API endpoint, e.g.  \fChttps://api.anthropic.com/v1/messages\fP.
+.RE
+.PP
+\fImax_tokens=\fR
+.PP
+\fItemperature=\fR
+.PP
+\fItop_k=\fR
+.PP
+\fItop_p=\fR
+.PP
+\fIversion=\fR
+.RS 4
+The version to supply to the
+.I anthropic-version
+HTTP header field.
+.RE
+.PP
 
 .SH [LLAMACPP] SECTION OPTIONS
 These options tailor the behavior of the llama.cpp
@@ -264,7 +301,7 @@ The names and order of configuration files are documented in
 Diomidis Spinellis (dds@aueb.gr)
 
 .SH COPYRIGHT
-Copyright 2023 Diomidis Spinellis
+Copyright 2023-2024 Diomidis Spinellis
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
