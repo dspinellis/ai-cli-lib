@@ -129,7 +129,7 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	// Add history prompts as context
 	for (int i = config->prompt_context - 1; i >= 0; --i) {
 		HIST_ENTRY *h = history_get(history_length - 1 - i);
-		if (h == NULL)
+		if (h == NULL || h->line == NULL || h->line[0] == '\0')
 			continue;
 		string_appendf(&json_request,
 		    "    {\"role\": \"user\", \"content\": %s},\n",
