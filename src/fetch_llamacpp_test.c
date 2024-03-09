@@ -19,7 +19,7 @@
  */
 
 #include "CuTest.h"
-#include "llamacpp_fetch.h"
+#include "fetch_llamacpp.h"
 
 static const char json_response[] = "{"
 	"  \"content\": \"Assistant: shutdown -h now\","

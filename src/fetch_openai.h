@@ -1,7 +1,7 @@
 /*-
  *
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
- *  llama.cpp access function
+ *  OpenAI access function
  *
  *  Copyright 2023 Diomidis Spinellis
  *
@@ -20,5 +20,5 @@
 
 #include "config.h"
 
-char *anthropic_get_response_content(const char *json_response);
-char *anthropic_fetch(config_t *config, const char *prompt, int history_length);
+char *openai_get_response_content(const char *json_response);
+char *fetch_openai(config_t *config, const char *prompt, int history_length);

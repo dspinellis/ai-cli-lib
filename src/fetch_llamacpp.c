@@ -27,7 +27,7 @@
 
 #include "config.h"
 #include "support.h"
-#include "llamacpp_fetch.h"
+#include "fetch_llamacpp.h"
 
 // Return the response content from a llama.cpp JSON response
 STATIC char *
@@ -96,7 +96,7 @@ prompt_append(struct string *s, const char *role, const char *prompt)
  * Provide context in the form of n-shot prompts and history prompts.
  */
 char *
-llamacpp_fetch(config_t *config, const char *prompt, int history_length)
+fetch_llamacpp(config_t *config, const char *prompt, int history_length)
 {
 	CURLcode res;
 

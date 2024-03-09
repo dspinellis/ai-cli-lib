@@ -1,9 +1,9 @@
 /*-
  *
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
- *  OpenAI access function
+ *  anthropic access function
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,34 +27,36 @@
 
 #include "config.h"
 #include "support.h"
+#include "fetch_anthropic.h"
 
-static char *authorization;
+// HTTP headers
+static char *key_header;
+static char *version_header;
 
-// Return the response content from an OpenAI JSON response
+// Return the response content from an Anthropic JSON response
 STATIC char *
-openai_get_response_content(const char *json_response)
+anthropic_get_response_content(const char *json_response)
 {
 	json_error_t error;
 	json_t *root = json_loads(json_response, 0, &error);
 	if (!root) {
-		readline_printf("\nOpenAI JSON error: on line %d: %s\n", error.line, error.text);
+		readline_printf("\nanthropic JSON error: on line %d: %s\n", error.line, error.text);
 		return NULL;
 	}
 
 	char *ret;
-	json_t *choices = json_object_get(root, "choices");
-	if (choices) {
-		json_t *first_choice = json_array_get(choices, 0);
-		json_t *message = json_object_get(first_choice, "message");
-		json_t *content = json_object_get(message, "content");
-		ret = safe_strdup(json_string_value(content));
+	json_t *content = json_object_get(root, "content");
+	if (content) {
+		json_t *first_content = json_array_get(content, 0);
+		json_t *text = json_object_get(first_content, "text");
+		ret = safe_strdup(json_string_value(text));
 	} else {
 		json_t *error = json_object_get(root, "error");
 		if (error) {
 			json_t *message = json_object_get(error, "message");
-			readline_printf("\nOpenAI API invocation error: %s\n", json_string_value(message));
+			readline_printf("\nAnthropic invocation error: %s\n", json_string_value(message));
 		} else
-			readline_printf("\nOpenAI API invocation error: %s\n", json_response);
+			readline_printf("\nAnthropic invocation error: %s\n", json_response);
 		ret = NULL;
 	}
 
@@ -63,26 +65,26 @@ openai_get_response_content(const char *json_response)
 }
 
 /*
- * Initialize OpenAI connection
+ * Initialize anthropic connection
  * Return 0 on success -1 on error
  */
 static int
 initialize(config_t *config)
 {
-
 	if (config->general_verbose)
-		fprintf(stderr, "\nInitializing openAI API, program name [%s] system prompt to use [%s]\n",
+		fprintf(stderr, "\nInitializing Anthropic, program name [%s] system prompt to use [%s]\n",
 		    short_program_name(), config->prompt_system);
-	safe_asprintf(&authorization, "Authorization: Bearer %s", config->openai_key);
+	safe_asprintf(&key_header, "x-api-key: %s", config->anthropic_key);
+	safe_asprintf(&version_header, "anthropic-version: %s", config->anthropic_version);
 	return curl_initialize(config);
 }
 
 /*
- * Fetch response from the OpenAI API given the provided prompt.
+ * Fetch response from the anthropic API given the provided prompt.
  * Provide context in the form of n-shot prompts and history prompts.
  */
 char *
-openai_fetch(config_t *config, const char *prompt, int history_length)
+fetch_anthropic(config_t *config, const char *prompt, int history_length)
 {
 	CURLcode res;
 
@@ -90,29 +92,38 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 		return NULL;
 
 	if (config->general_verbose)
-		fprintf(stderr, "\nContacting OpenAI API...\n");
+		fprintf(stderr, "\nContacting Llamacpp API...\n");
 
 	struct curl_slist *headers = NULL;
-	headers = curl_slist_append(headers, "Content-Type: application/json");
-	headers = curl_slist_append(headers, authorization);
+	headers = curl_slist_append(headers, "content-type: application/json");
+	headers = curl_slist_append(headers, key_header);
+	headers = curl_slist_append(headers, version_header);
 
 	struct string json_response;
 	string_init(&json_response, "");
 
 	struct string json_request;
 	string_init(&json_request, "{\n");
-	string_appendf(&json_request, "  \"model\": %s,\n",
-	    json_escape(config->openai_model));
-	string_appendf(&json_request, "  \"temperature\": %g,\n",
-	    config->openai_temperature);
 
-	string_append(&json_request, "  \"messages\": [\n");
+	string_appendf(&json_request, "  \"model\": %s,\n",
+	    json_escape(config->anthropic_model));
+	string_appendf(&json_request, "  \"max_tokens\": %d,\n",
+	    config->anthropic_max_tokens);
 
 	char *system_role = system_role_get(config);
-	string_appendf(&json_request,
-	    "    {\"role\": \"system\", \"content\": %s},\n",
+	string_appendf(&json_request, "  \"system\": %s,\n",
 	    json_escape(system_role));
 	free(system_role);
+
+	// Add configuration settings
+	if (config->anthropic_temperature_set)
+		string_appendf(&json_request, "  \"temperature\": %g,\n", config->anthropic_temperature);
+	if (config->anthropic_top_k_set)
+		string_appendf(&json_request, "  \"top_k\": %d,\n", config->anthropic_top_k);
+	if (config->anthropic_top_p_set)
+		string_appendf(&json_request, "  \"top_p\": %g,\n", config->anthropic_top_p);
+
+	string_append(&json_request, "  \"messages\": [\n");
 
 	// Add user and assistant n-shot prompts
 	for (int i = 0; i < NPROMPTS; i++) {
@@ -127,13 +138,23 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 	}
 
 	// Add history prompts as context
+	bool context_explained = false;
 	for (int i = config->prompt_context - 1; i >= 0; --i) {
 		HIST_ENTRY *h = history_get(history_length - 1 - i);
-		if (h == NULL || h->line == NULL || h->line[0] == '\0')
+		if (h == NULL)
 			continue;
+		if (!context_explained) {
+			context_explained = true;
+			string_appendf(&json_request,
+			    "    {\"role\": \"user\", \"content\": \"Before my final prompt to which I expect a reply, I am also supplying you as context with one or more previously issued commands, to which you simply reply OK\"},\n");
+			string_appendf(&json_request,
+			    "    {\"role\": \"assistant\", \"content\": \"OK\"},\n");
+		}
 		string_appendf(&json_request,
 		    "    {\"role\": \"user\", \"content\": %s},\n",
 		    json_escape(h->line));
+		string_appendf(&json_request,
+		    "    {\"role\": \"assistant\", \"content\": \"OK\"},\n");
 	}
 
 	// Finally, add the user prompt
@@ -143,7 +164,7 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 
 	write_log(config, json_request.ptr);
 
-	curl_easy_setopt(curl, CURLOPT_URL, config->openai_endpoint);
+	curl_easy_setopt(curl, CURLOPT_URL, config->anthropic_endpoint);
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, string_write);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &json_response);
@@ -153,14 +174,14 @@ openai_fetch(config_t *config, const char *prompt, int history_length)
 
 	if (res != CURLE_OK) {
 		free(json_request.ptr);
-		readline_printf("\nOpenAI API call failed: %s\n",
+		readline_printf("\nAnthropic API call failed: %s\n",
 		    curl_easy_strerror(res));
 		return NULL;
 	}
 
 	write_log(config, json_response.ptr);
 
-	char *text_response = openai_get_response_content(json_response.ptr);
+	char *text_response = anthropic_get_response_content(json_response.ptr);
 	free(json_request.ptr);
 	free(json_response.ptr);
 	return text_response;

@@ -1,9 +1,9 @@
 /*-
  *
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
- *  Test OpenAI response parsing.
+ *  Test Anthropic response parsing.
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,39 +19,36 @@
  */
 
 #include "CuTest.h"
-#include "openai_fetch.h"
+#include "fetch_anthropic.h"
 
-static const char json_response[] = "{\n"
-	"  \"id\": \"chatcmpl-7lg1IuegIknbhVaP00yWmdOeCeWi1\",\n"
-	"  \"object\": \"chat.completion\",\n"
-	"  \"created\": 1691597296,\n"
-	"  \"model\": \"gpt-3.5-turbo-0613\",\n"
-	"  \"choices\": [\n"
-	"    {\n"
-	"      \"index\": 0,\n"
-	"      \"message\": {\n"
-	"        \"role\": \"assistant\",\n"
-	"        \"content\": \"help\"\n"
-	"      },\n"
-	"      \"finish_reason\": \"stop\"\n"
-	"    }\n"
-	"  ],\n"
-	"  \"usage\": {\n"
-	"    \"prompt_tokens\": 116,\n"
-	"    \"completion_tokens\": 1,\n"
-	"    \"total_tokens\": 117\n"
-	"  }\n"
-	"}\n";
+static const char json_response[] = "{"
+    "  \"content\": ["
+    "    {"
+    "      \"text\": \"shutdown -h now\","
+    "      \"type\": \"text\""
+    "    }"
+    "  ],"
+    "  \"id\": \"msg_013Zva2CMHLNnXjNJJKqJ2EF\","
+    "  \"model\": \"claude-3-opus-20240229\","
+    "  \"role\": \"assistant\","
+    "  \"stop_reason\": \"end_turn\","
+    "  \"stop_sequence\": null,"
+    "  \"type\": \"message\","
+    "  \"usage\": {"
+    "    \"input_tokens\": 10,"
+    "    \"output_tokens\": 25"
+    "  }"
+    "}";
 
 static void
 test_response_parse(CuTest* tc)
 {
-	const char *response = openai_get_response_content(json_response);
-	CuAssertStrEquals(tc, "help", response);
+	const char *response = anthropic_get_response_content(json_response);
+	CuAssertStrEquals(tc, "shutdown -h now", response);
 }
 
 CuSuite*
-cu_fetch_openai_suite(void)
+cu_fetch_anthropic_suite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 

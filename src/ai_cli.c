@@ -29,9 +29,9 @@
 
 #include "config.h"
 
-#include "anthropic_fetch.h"
-#include "llamacpp_fetch.h"
-#include "openai_fetch.h"
+#include "fetch_anthropic.h"
+#include "fetch_llamacpp.h"
+#include "fetch_openai.h"
 
 /*
  * Dynamically obtained pointer to readline(3) variables..
@@ -47,7 +47,7 @@ static int *history_length_ptr;
 // Loaded configuration
 static config_t config;
 
-// API fetch function, e.g. openai_fetch or llamacpp_fetch
+// API fetch function, e.g. fetch_openai or fetch_llamacpp
 
 char * (*fetch)(config_t *config, const char *prompt, int history_length);
 
@@ -132,16 +132,16 @@ setup(void)
 	REQUIRE(general, api);
 
 	if (strcmp(config.general_api, "openai") == 0) {
-		fetch = openai_fetch;
+		fetch = fetch_openai;
 		REQUIRE(openai, key);
 		REQUIRE(openai, endpoint);
 	} else if (strcmp(config.general_api, "anthropic") == 0) {
-		fetch = anthropic_fetch;
+		fetch = fetch_anthropic;
 		REQUIRE(anthropic, key);
 		REQUIRE(anthropic, endpoint);
 		REQUIRE(anthropic, version);
 	} else if (strcmp(config.general_api, "llamacpp") == 0) {
-		fetch = llamacpp_fetch;
+		fetch = fetch_llamacpp;
 		REQUIRE(llamacpp, endpoint);
 	} else {
 		fprintf(stderr, "Unsupported API: [%s].\n", config.general_api);

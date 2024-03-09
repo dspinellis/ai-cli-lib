@@ -228,7 +228,7 @@ Particular useful are:
 * multi-shot prompts for systems not yet supported
   (see the [ai-cli-config](src/ai-cli-config) file),
 * support for other large language models
-  (start from the [OpenAI_fetch.c](src/openai_fetch.c) file),
+  (start from the [openai_fetch.c](src/openai_fetch.c) file),
 * support for other libraries (mainly [editline](https://man.netbsd.org/editline.3)),
 * ports to other platforms and distributions.
 

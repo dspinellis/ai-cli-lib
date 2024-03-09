@@ -21,4 +21,4 @@
 #include "config.h"
 
 char *llamacpp_get_response_content(const char *json_response);
-char *llamacpp_fetch(config_t *config, const char *prompt, int history_length);
+char *fetch_llamacpp(config_t *config, const char *prompt, int history_length);
