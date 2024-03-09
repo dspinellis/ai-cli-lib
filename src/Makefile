@@ -6,7 +6,7 @@ MANPREFIX ?= "$(PREFIX)/share/man/"
 SHAREPREFIX ?= "$(PREFIX)/share/ai-cli"
 
 PROGS=rl_driver $(SHARED_LIB)
-RL_SRC=ai_cli.c config.c ini.c fetch_anthropic.c fetch_openai.c \
+RL_SRC=ai_cli.c config.c ini.c fetch_anthropic.c fetch_hal.c fetch_openai.c \
        fetch_llamacpp.c support.c
 TEST_SRC=$(wildcard *_test.c)
 LIB=-lcurl -ljansson

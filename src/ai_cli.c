@@ -30,6 +30,7 @@
 #include "config.h"
 
 #include "fetch_anthropic.h"
+#include "fetch_hal.h"
 #include "fetch_llamacpp.h"
 #include "fetch_openai.h"
 
@@ -140,6 +141,8 @@ setup(void)
 		REQUIRE(anthropic, key);
 		REQUIRE(anthropic, endpoint);
 		REQUIRE(anthropic, version);
+	} else if (strcmp(config.general_api, "hal") == 0) {
+		fetch = fetch_hal;
 	} else if (strcmp(config.general_api, "llamacpp") == 0) {
 		fetch = fetch_llamacpp;
 		REQUIRE(llamacpp, endpoint);
