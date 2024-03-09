@@ -91,11 +91,15 @@ can be configured through the files and environment variables listed in the
 section and the format documented in
 .BR ai_cli (5).
 
-.SH BUGS
-.B ai_cli
-will not work with programs that are linked statically with
-.BR readline (3)
-rather than using it as a shared library object.
+.SH ENVIRONMENT VARIABLES
+All configuration entries specified through
+.BR ai_cli (5).
+can be overridden by supplying to a program's
+invocation an environment variable named
+\fCAI_CLI_\fIsection\fC_\fIoption\fR,
+where dashes are replaced with underscores.
+For example, an environment variable setting could be
+\fCAI_CLI_prompt_gdb_user_1=Disable breakpoint 3\fP.
 
 .SH FILES
 .IR /usr/share/ai-cli/config ,
@@ -110,6 +114,12 @@ configuration files.
 
 .SH SEE ALSO
 .BR ai_cli (5).
+
+.SH BUGS
+.B ai_cli
+will not work with programs that are linked statically with
+.BR readline (3)
+rather than using it as a shared library object.
 
 .SH AUTHOR
 Diomidis Spinellis (dds@aueb.gr)
