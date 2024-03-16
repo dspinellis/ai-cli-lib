@@ -20,6 +20,7 @@
 
 #include "config.h"
 #include "fetch_hal.h"
+#include "support.h"
 
 /*
  * Fetch response from the dummy HAL 9000 API.
@@ -31,5 +32,5 @@
 char *
 fetch_hal(config_t *config, const char *prompt, int history_length)
 {
-	return "# I'm sorry, Dave. I'm afraid I can't do that.";
+	return safe_strdup("# I'm sorry, Dave. I'm afraid I can't do that.");
 }
