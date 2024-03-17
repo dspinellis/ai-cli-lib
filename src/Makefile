@@ -64,7 +64,7 @@ e2e-run: $(PROGS) # Help: Invoke the library with a readline read/print loop
 	$(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) ./rl_driver
 
 e2e-test: $(PROGS) # Help: Test the readline hook
-	printf 'Open the pod bay doors HAL\eV' | \
+	printf 'Open the pod bay doors HAL\eV\030A' | \
 	  $(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) AI_CLI_general_api=hal ./rl_driver | \
 	  grep Dave
 
