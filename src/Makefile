@@ -60,8 +60,13 @@ rl_driver: rl_driver.c
 $(SHARED_LIB): $(RL_SRC)
 	$(CC) $(SHARED_FLAGS) $(CFLAGS) $(LDFLAGS) $(RL_SRC) -o $@ -ldl $(SHARED_LIB_LIB)
 
-e2e-test: $(PROGS) # Help: Invoke the library with a readline read/print loop
+e2e-run: $(PROGS) # Help: Invoke the library with a readline read/print loop
 	$(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) ./rl_driver
+
+e2e-test: $(PROGS) # Help: Test the readline hook
+	printf 'Open the pod bay doors HAL\eV' | \
+	  $(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) AI_CLI_general_api=hal ./rl_driver | \
+	  grep Dave
 
 all-tests: $(TEST_SRC) $(RL_SRC)
 	$(CC) -DUNIT_TEST $(CFLAGS) $(LDFLAGS) all_tests.c $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -lreadline -o $@

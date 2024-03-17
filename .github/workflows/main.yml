@@ -36,4 +36,4 @@ jobs:
       run: make -C src unit-test
 
     - name: End-to-end test
-      run: echo hi | make -C src e2e-test
+      run: make -C src e2e-test
