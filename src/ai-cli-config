@@ -32,12 +32,14 @@ emacs = \C-xa
 
 ; Multishot command-specific prompts
 [prompt-gdb]
+comment = #
 user-1 = Disable breakpoint number 4
 assistant-1 = delete 4
 user-2 = break on line 67 of foo.cpp when flag is false,
 assistant-3 = break foo.cpp:67 if !flag
 
 [prompt-bash]
+comment = #
 user-1 = List files in current directory
 assistant-1 = ls
 user-2 = How many JavaScript files in the current directory contain the word bar?
@@ -46,6 +48,7 @@ user-3 = xyzzy
 assistant-3 = # Sorry I can't help.
 
 [prompt-sqlite3]
+comment = --
 user-1 = Show available tables
 assistant-1 = .tables
 user-2 = Show average of grade in table students
@@ -54,9 +57,13 @@ user-3 = xyzzy
 assistant-3 = -- Sorry I can't help.
 
 [prompt-bc]
+comment = #
 user-1 = Calculate 2 raised to the 64th power
 assistant-1 = 2^64
 user-2 = Increment variable i by 1
 assistant-2 = i++
 user-3 = xyzzy
 assistant-3 = /* Sorry I can't help. */
+
+[prompt-rl_driver]
+comment = #

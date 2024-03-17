@@ -30,10 +30,12 @@ main(int argc, char *argv[])
 {
 	char *s;
 
+	using_history();
 	while ((s = readline("> ")) != NULL) {
-		printf("Read [%s]\n", s);
+		printf("\nRead [%s]\n", s);
 		if (*s)
 			add_history(s);
+
 		free(s);
 	}
 }

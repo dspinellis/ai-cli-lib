@@ -208,8 +208,9 @@ fixed_program_matcher(config_t *pconfig, const char* name, const char* value)
 			return 1; \
 		} \
 	} while (0)
-        MATCH_PROGRAM(system, safe_strdup);
+        MATCH_PROGRAM(comment, safe_strdup);
         MATCH_PROGRAM(context, strtocard);
+        MATCH_PROGRAM(system, safe_strdup);
 
 	return 0;
 }

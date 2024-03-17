@@ -28,6 +28,7 @@
 #include <readline/history.h>
 
 #include "config.h"
+#include "support.h"
 
 #include "fetch_anthropic.h"
 #include "fetch_hal.h"
@@ -53,6 +54,28 @@ static config_t config;
 char * (*fetch)(config_t *config, const char *prompt, int history_length);
 
 /*
+ * Add the specified prompt to the RL history, as a comment if the
+ * comment prefix is defined.
+ */
+static void
+add_prompt_to_history(const char *prompt)
+{
+	if (prompt == NULL)
+		return;
+
+	if (!config.prompt_comment_set) {
+		add_history(prompt);
+		return;
+	}
+
+	char *commented_prompt;
+	safe_asprintf(&commented_prompt, "%s %s", config.prompt_comment,
+	    prompt);
+	add_history(commented_prompt);
+	free(commented_prompt);
+}
+
+/*
  * The user has has asked for AI to be queried on the typed text
  * Replace the user's text with the queried on
  */
@@ -66,14 +89,13 @@ query_ai(int count, int key)
 		prev_response = NULL;
 	}
 
-	add_history(*rl_line_buffer_ptr);
+	add_prompt_to_history(*rl_line_buffer_ptr);
 	char *response = fetch(&config, *rl_line_buffer_ptr,
 	    *history_length_ptr);
 	if (!response)
 		return -1;
 	rl_crlf();
 	rl_on_new_line();
-	rl_begin_undo_group();
 	rl_delete_text(0, *rl_end_ptr);
 	*rl_point_ptr = 0;
 	if (config.general_response_prefix_set) {
@@ -81,8 +103,16 @@ query_ai(int count, int key)
 		rl_insert_text(" ");
 	}
 	rl_insert_text(response);
-	rl_end_undo_group();
 	prev_response = response;
+	/*
+	 * The readline_internal_teardown() function will restore
+	 * the original history line iff the line being edited
+	 * was originally in the history, AND the line has changed.
+	 * Avoid this by clearing the undo list.
+	 * This results in the commented prompt rather than the
+	 * ucommented prompt being stored in the history.
+	 */
+	rl_free_undo_list();
 	return 0;
 }
 

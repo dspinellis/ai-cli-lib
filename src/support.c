@@ -101,6 +101,7 @@ range_strdup(const char *begin, const char *end)
 	return p;
 }
 
+// Store the formatted output in the dynamically allocated buffer strp
 int
 safe_asprintf(char **strp, const char *fmt, ...)
 {

@@ -82,6 +82,8 @@ typedef struct {
 	int prompt_context;		// # past prompts to provide as context
 	const char *prompt_system;	// System prompt
 
+	// Specific program's comment character to be prefixed in prompts
+	const char *prompt_comment;
 	// Up to three training shots for a specific program
 	const char *prompt_user[NPROMPTS];
 	const char *prompt_assistant[NPROMPTS];
@@ -129,6 +131,7 @@ typedef struct {
 	bool openai_model_set;
 	bool openai_temperature_set;
 
+	bool prompt_comment_set;
 	bool prompt_context_set;
 	bool prompt_system_set;
 } config_t;

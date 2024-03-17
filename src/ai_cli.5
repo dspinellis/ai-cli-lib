@@ -1,4 +1,4 @@
-.TH AI_READLINE 5 "2023-12-12" "Diomidis Spinellis" \" -*-
+.TH AI_READLINE 5 "2024-03-17" "Diomidis Spinellis" \" -*-
  \" nroff -*
 
 .SH NAME
@@ -237,6 +237,14 @@ for improving the obtained responses.
 The multishot example prompts are provided by
 .B ai_cli
 at the beginning of each API request.
+
+.PP
+\fIcomment=\fR
+.RS 4
+The line comment sequence for the corresponding tool.
+If this is defined, then prompt lines are stored in the
+history and provided as context in the form of line comments.
+.RE
 
 .PP
 \fIuser-n=\fR
