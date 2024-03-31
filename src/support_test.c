@@ -3,7 +3,7 @@
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Safe memory allocation and other functions.
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,18 +26,18 @@
 void
 test_strtocard(CuTest* tc)
 {
-	CuAssertIntEquals(tc, 12, strtocard("12"));
-	CuAssertIntEquals(tc, -1, strtocard(""));
-	CuAssertIntEquals(tc, -1, strtocard("x"));
-	CuAssertIntEquals(tc, -1, strtocard("3x"));
-	CuAssertIntEquals(tc, -1, strtocard("-3"));
+	CuAssertIntEquals(tc, 12, acl_strtocard("12"));
+	CuAssertIntEquals(tc, -1, acl_strtocard(""));
+	CuAssertIntEquals(tc, -1, acl_strtocard("x"));
+	CuAssertIntEquals(tc, -1, acl_strtocard("3x"));
+	CuAssertIntEquals(tc, -1, acl_strtocard("-3"));
 }
 
 void
 test_asprintf(CuTest* tc)
 {
 	char *result;
-	safe_asprintf(&result, "a=%d", 42);
+	acl_safe_asprintf(&result, "a=%d", 42);
 	CuAssertStrEquals(tc, "a=42", result);
 	free(result);
 }
@@ -47,7 +47,7 @@ test_range_strdup(CuTest* tc)
 {
 	char string[] = "01234";
 	char *result;
-	result = range_strdup(string + 1, string + 3);
+	result = acl_range_strdup(string + 1, string + 3);
 	CuAssertStrEquals(tc, "12", result);
 	free(result);
 }
@@ -56,25 +56,25 @@ void
 test_string(CuTest* tc)
 {
 	string_t s;
-	string_init(&s, "hello");
-	string_write(", ", 1, 2, &s);
-	string_append(&s, "world!");
+	acl_string_init(&s, "hello");
+	acl_string_write(", ", 1, 2, &s);
+	acl_string_append(&s, "world!");
 	CuAssertStrEquals(tc, "hello, world!", s.ptr);
 
-	string_appendf(&s, " The answer is %d.",  42);
+	acl_string_appendf(&s, " The answer is %d.",  42);
 	CuAssertStrEquals(tc, "hello, world! The answer is 42.", s.ptr);
 }
 
 void
 test_short_program_name(CuTest* tc)
 {
-	CuAssertStrEquals(tc, "all-tests", short_program_name());
+	CuAssertStrEquals(tc, "all-tests", acl_short_program_name());
 }
 
 void
 test_json_escape(CuTest* tc)
 {
-	CuAssertStrEquals(tc, "\"a \\\" (quote) and a \\\\ (backslash)\"", json_escape("a \" (quote) and a \\ (backslash)"));
+	CuAssertStrEquals(tc, "\"a \\\" (quote) and a \\\\ (backslash)\"", acl_json_escape("a \" (quote) and a \\ (backslash)"));
 }
 
 

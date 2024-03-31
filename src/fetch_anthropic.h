@@ -3,7 +3,7 @@
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  llama.cpp access function
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,5 +20,8 @@
 
 #include "config.h"
 
+#if defined(UNIT_TEST)
 char *anthropic_get_response_content(const char *json_response);
-char *fetch_anthropic(config_t *config, const char *prompt, int history_length);
+#endif
+
+char *acl_fetch_anthropic(config_t *config, const char *prompt, int history_length);

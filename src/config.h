@@ -3,7 +3,7 @@
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Configuration parsing and access
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@
 #pragma once
 
 #include <stdbool.h>
+
+#include "unit_test.h"
 
 // Number of supported n-shot prompts
 #define NPROMPTS 3
@@ -136,8 +138,10 @@ typedef struct {
 	bool prompt_system_set;
 } config_t;
 
-void read_config(config_t *config);
-void read_file_config(config_t *config, const char *file_path);
+void acl_read_config(config_t *config);
 
-char *system_role_get(config_t *config);
-void set_program_name(config_t *config, const char *name);
+#if defined(UNIT_TEST)
+void read_file_config(config_t *config, const char *file_path);
+#endif
+
+char *acl_system_role_get(config_t *config);

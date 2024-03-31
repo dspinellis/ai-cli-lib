@@ -3,7 +3,7 @@
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Configuration parsing and access
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 #include "ini.h"
 
 
-const char hidden_config_name[] = ".aicliconfig";
+static const char hidden_config_name[] = ".aicliconfig";
 
 /*
  * Prefixes for providing n-shot user and assistant prompts in ini files.
@@ -39,9 +39,9 @@ const char hidden_config_name[] = ".aicliconfig";
  * user-1 = Disable breakpoint number 4
  * assistant-1 = delete 4
  */
-const char prompt_ini_prefix[] = "prompt-";
-const char user_ini_prefix[] = "user-";
-const char assistant_ini_prefix[] = "assistant-";
+static const char prompt_ini_prefix[] = "prompt-";
+static const char user_ini_prefix[] = "user-";
+static const char assistant_ini_prefix[] = "assistant-";
 
 /*
  * Prefixes for providing n-shot user and assistant prompts in
@@ -49,9 +49,9 @@ const char assistant_ini_prefix[] = "assistant-";
  * AI_CLI_prompt_gdb_user_1=Disable breakpoint number 4
  * AI_CLI_prompt_gdb_assistant_1=delete 4
  */
-const char env_prompt_prefix[] = "AI_CLI_prompt_";
-const char user_env_prefix[] = "user_";
-const char assistant_env_prefix[] = "assistant_";
+static const char env_prompt_prefix[] = "AI_CLI_prompt_";
+static const char user_env_prefix[] = "user_";
+static const char assistant_env_prefix[] = "assistant_";
 
 // Return true if the specified string starts with the given prefix
 STATIC bool
@@ -74,7 +74,7 @@ prompt_id(const char *entry)
 	const char *id_end = strchr(id_begin, '_');
 	if (!id_end)
 		return NULL;
-	return range_strdup(id_begin, id_end);
+	return acl_range_strdup(id_begin, id_end);
 }
 
 /*
@@ -86,12 +86,12 @@ prompt_id(const char *entry)
 STATIC int
 prompt_number(const char *name, const char *prompt_prefix)
 {
-	int result = strtocard(name + strlen(prompt_prefix));
+	int result = acl_strtocard(name + strlen(prompt_prefix));
 	return result <= 0 || result > NPROMPTS ? -1 : result - 1;
 }
 
 // Return true if the string contains the value true
-bool
+static bool
 strtobool(const char *string)
 {
 	return strcmp(string, "true") == 0;
@@ -138,25 +138,25 @@ fixed_matcher(config_t *pconfig, const char* section,
 	} while(0)
 
 	// In section, key alphabetic order
-	MATCH(anthropic, endpoint, safe_strdup);
-	MATCH(anthropic, key, safe_strdup);
+	MATCH(anthropic, endpoint, acl_safe_strdup);
+	MATCH(anthropic, key, acl_safe_strdup);
 	MATCH(anthropic, max_tokens, atoi);
-	MATCH(anthropic, model, safe_strdup);
+	MATCH(anthropic, model, acl_safe_strdup);
 	MATCH(anthropic, temperature, atof);
 	MATCH(anthropic, top_k, atoi);
 	MATCH(anthropic, top_p, atof);
-	MATCH(anthropic, version, safe_strdup);
+	MATCH(anthropic, version, acl_safe_strdup);
 
-	MATCH(binding, emacs, safe_strdup);
-	MATCH(binding, vi, safe_strdup);
+	MATCH(binding, emacs, acl_safe_strdup);
+	MATCH(binding, vi, acl_safe_strdup);
 
-	MATCH(general, api, safe_strdup);
-	MATCH(general, logfile, safe_strdup);
-	MATCH(general, response_prefix, safe_strdup);
+	MATCH(general, api, acl_safe_strdup);
+	MATCH(general, logfile, acl_safe_strdup);
+	MATCH(general, response_prefix, acl_safe_strdup);
 	MATCH(general, timestamp, strtobool);
 	MATCH(general, verbose, strtobool);
 
-	MATCH(llamacpp, endpoint, safe_strdup);
+	MATCH(llamacpp, endpoint, acl_safe_strdup);
 	MATCH(llamacpp, frequency_penalty, atof);
 	MATCH(llamacpp, mirostat, atoi);
 	MATCH(llamacpp, mirostat_eta, atof);
@@ -174,13 +174,13 @@ fixed_matcher(config_t *pconfig, const char* section,
 	MATCH(llamacpp, top_p, atof);
 	MATCH(llamacpp, typical_p, atof);
 
-	MATCH(openai, endpoint, safe_strdup);
-	MATCH(openai, key, safe_strdup);
-	MATCH(openai, model, safe_strdup);
+	MATCH(openai, endpoint, acl_safe_strdup);
+	MATCH(openai, key, acl_safe_strdup);
+	MATCH(openai, model, acl_safe_strdup);
 	MATCH(openai, temperature, atof);
 
-	MATCH(prompt, context, strtocard);
-	MATCH(prompt, system, safe_strdup);
+	MATCH(prompt, context, acl_strtocard);
+	MATCH(prompt, system, acl_safe_strdup);
 
 	return 0;
 }
@@ -208,9 +208,9 @@ fixed_program_matcher(config_t *pconfig, const char* name, const char* value)
 			return 1; \
 		} \
 	} while (0)
-        MATCH_PROGRAM(comment, safe_strdup);
-        MATCH_PROGRAM(context, strtocard);
-        MATCH_PROGRAM(system, safe_strdup);
+        MATCH_PROGRAM(comment, acl_safe_strdup);
+        MATCH_PROGRAM(context, acl_strtocard);
+        MATCH_PROGRAM(system, acl_safe_strdup);
 
 	return 0;
 }
@@ -233,7 +233,7 @@ config_handler(void* user, const char* section, const char* name,
 		return 1;
 
 	if (!starts_with(section, prompt_ini_prefix))
-		errorf("Unknown configuration section [%s], name `%s'.", section, name);
+		acl_errorf("Unknown configuration section [%s], name `%s'.", section, name);
 
 	/*
 	 * A program specific section. It can provide user or assistant
@@ -260,17 +260,17 @@ config_handler(void* user, const char* section, const char* name,
 	if (starts_with(name, user_ini_prefix)) {
 		int n = prompt_number(name, user_ini_prefix);
 		if (n == -1)
-			errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
+			acl_errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
 		pconfig->prompt_user[n] = strdup(value);
 		return 1;
 	} else if (starts_with(name, assistant_ini_prefix)) {
 		int n = prompt_number(name, assistant_ini_prefix);
 		if (n == -1)
-			errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
+			acl_errorf("Invalid prompt number, section [%s], name `%s', value `%s'.", section, name, value);
 		pconfig->prompt_assistant[n] = strdup(value);
 		return 1;
 	}
-	errorf("Unknown configuration section [%s], name `%s'.", section, name);
+	acl_errorf("Unknown configuration section [%s], name `%s'.", section, name);
 	return 0;  /* unknown section/name, error */
 }
 
@@ -307,7 +307,7 @@ env_override(config_t *config)
 		// E.g. sqlite3 or gitconfig (which will be named git-config)
 		char *program_name = prompt_id(entry);
 		if (!program_name)
-			errorf("Missing program identifier in prompt environment variable %s", entry);
+			acl_errorf("Missing program identifier in prompt environment variable %s", entry);
 
 		// Skip matching of programs other than ours
 		if (strcmp(program_name, config->program_name) != 0) {
@@ -319,24 +319,24 @@ env_override(config_t *config)
 			strlen(program_name);
 		const char *prompt_name_end = strchr(prompt_name_begin, '=');
 		if (!prompt_name_end)
-			errorf("Missing value in prompt environment variable %s", entry);
-		char *prompt_name = range_strdup(prompt_name_begin, prompt_name_end);
+			acl_errorf("Missing value in prompt environment variable %s", entry);
+		char *prompt_name = acl_range_strdup(prompt_name_begin, prompt_name_end);
 		const char *prompt_value = prompt_name_end + 1;
 
 		if (starts_with(prompt_name, user_env_prefix)) {
 			int n = prompt_number(prompt_name, user_env_prefix);
 			if (n == -1)
-				errorf("Invalid prompt value in environment variable %s", entry);
+				acl_errorf("Invalid prompt value in environment variable %s", entry);
 			else
 				config->prompt_user[n] = strdup(prompt_value);
 		} else if (starts_with(prompt_name, assistant_env_prefix)) {
 			int n = prompt_number(prompt_name, assistant_env_prefix);
 			if (n == -1)
-				errorf("Invalid prompt value in environment variable %s", entry);
+				acl_errorf("Invalid prompt value in environment variable %s", entry);
 			else
 				config->prompt_assistant[n] = strdup(prompt_value);
 		} else if (!fixed_program_matcher(config, prompt_name, prompt_value))
-			errorf("Invalid name in environment variable %s", entry);
+			acl_errorf("Invalid name in environment variable %s", entry);
 		free(program_name);
 		free(prompt_name);
 	}
@@ -350,16 +350,16 @@ ini_checked_parse(const char* filename, ini_handler handler, config_t *config)
 	int val = ini_parse(filename, handler, config);
 	// When unable to open file val is -1, which we ignore
 	if (val > 0)
-		errorf("%s:%d:1: Initialization file error", filename, val);
+		acl_errorf("%s:%d:1: Initialization file error", filename, val);
 }
 
 /*
  * Read the configuration file from diverse directories into config.
  */
 void
-read_config(config_t *config)
+acl_read_config(config_t *config)
 {
-	config->program_name = short_program_name();
+	config->program_name = acl_short_program_name();
 
 	ini_checked_parse("/usr/share/ai-cli/config", config_handler, config);
 	ini_checked_parse("/usr/local/share/ai-cli/config", config_handler, config);
@@ -370,11 +370,11 @@ read_config(config_t *config)
 	if ((home_dir = getenv("HOME")) != NULL) {
 		char *home_config;
 
-		safe_asprintf(&home_config, "%s/%s", home_dir, "share/ai-cli/config");
+		acl_safe_asprintf(&home_config, "%s/%s", home_dir, "share/ai-cli/config");
 		ini_checked_parse(home_config, config_handler, config);
 		free(home_config);
 
-		safe_asprintf(&home_config, "%s/%s", home_dir, hidden_config_name);
+		acl_safe_asprintf(&home_config, "%s/%s", home_dir, hidden_config_name);
 		ini_checked_parse(home_config, config_handler, config);
 		free(home_config);
 	}
@@ -384,6 +384,7 @@ read_config(config_t *config)
 	env_override(config);
 }
 
+#if defined(UNIT_TEST)
 /*
  * Read the configuration file from the specified file path into config.
  * This allows testing the config handler.
@@ -393,29 +394,20 @@ read_file_config(config_t *config, const char *file_path)
 {
 	// Allow unit tests to override this value
 	if (!config->program_name)
-		config->program_name = short_program_name();
+		config->program_name = acl_short_program_name();
 
 	ini_checked_parse(file_path, config_handler, config);
 	env_override(config);
 }
+#endif
 
 /*
  * Return the system role prompt string in dynamically allocated memory.
  */
 char *
-system_role_get(config_t *config)
+acl_system_role_get(config_t *config)
 {
 	char *system_role;
-	safe_asprintf(&system_role, config->prompt_system, config->program_name);
+	acl_safe_asprintf(&system_role, config->prompt_system, config->program_name);
 	return system_role;
-}
-
-/*
- * Set the name of the program executing the library.
- * Provided for testing.
- */
-void
-set_program_name(config_t *config, const char *name)
-{
-	config->program_name = name;
 }

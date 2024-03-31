@@ -3,7 +3,7 @@
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Dummy HAL 9000 access function, that can be used for testing.
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,4 +20,4 @@
 
 #include "config.h"
 
-char *fetch_hal(config_t *config, const char *prompt, int history_length);
+char *acl_fetch_hal(config_t *config, const char *prompt, int history_length);

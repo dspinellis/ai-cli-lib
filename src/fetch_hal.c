@@ -30,7 +30,7 @@
  * without the need to use a networked API.
  */
 char *
-fetch_hal(config_t *config, const char *prompt, int history_length)
+acl_fetch_hal(config_t *config, const char *prompt, int history_length)
 {
-	return safe_strdup("# I'm sorry, Dave. I'm afraid I can't do that.");
+	return acl_safe_strdup("# I'm sorry, Dave. I'm afraid I can't do that.");
 }

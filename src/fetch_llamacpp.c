@@ -3,7 +3,7 @@
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  llama.cpp access function
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@
 #include "config.h"
 #include "support.h"
 #include "fetch_llamacpp.h"
+#include "unit_test.h"
 
 // Return the response content from a llama.cpp JSON response
 STATIC char *
@@ -36,7 +37,7 @@ llamacpp_get_response_content(const char *json_response)
 	json_error_t error;
 	json_t *root = json_loads(json_response, 0, &error);
 	if (!root) {
-		readline_printf("\nllama.cpp JSON error: on line %d: %s\n", error.line, error.text);
+		acl_readline_printf("\nllama.cpp JSON error: on line %d: %s\n", error.line, error.text);
 		return NULL;
 	}
 
@@ -52,13 +53,13 @@ llamacpp_get_response_content(const char *json_response)
 			*eol = '\0';
 
 		if (memcmp(response, assistant, sizeof(assistant) - 1) == 0)
-			ret = safe_strdup(response + sizeof(assistant) - 1);
+			ret = acl_safe_strdup(response + sizeof(assistant) - 1);
 		else {
-			readline_printf("\nllama.cpp did not provide a suitable response.\n");
+			acl_readline_printf("\nllama.cpp did not provide a suitable response.\n");
 			ret = NULL;
 		}
 	} else {
-		readline_printf("\nllama.cpp invocation error: %s\n", json_response);
+		acl_readline_printf("\nllama.cpp invocation error: %s\n", json_response);
 		ret = NULL;
 	}
 
@@ -75,7 +76,7 @@ initialize(config_t *config)
 {
 	if (config->general_verbose)
 		fprintf(stderr, "\nInitializing Llamacpp API, program name [%s] system prompt to use [%s]\n",
-		    short_program_name(), config->prompt_system);
+		    acl_short_program_name(), config->prompt_system);
 	return curl_initialize(config);
 }
 
@@ -85,10 +86,10 @@ prompt_append(struct string *s, const char *role, const char *prompt)
 {
 	if (!prompt || !*prompt)
 		return;
-	char *escaped = json_escape(prompt) + 1;
+	char *escaped = acl_json_escape(prompt) + 1;
 	// Remove trailing quote
 	escaped[strlen(escaped) - 1] = '\0';
-	string_appendf(s, "%s: %s\\n", role, escaped);
+	acl_string_appendf(s, "%s: %s\\n", role, escaped);
 }
 
 /*
@@ -96,7 +97,7 @@ prompt_append(struct string *s, const char *role, const char *prompt)
  * Provide context in the form of n-shot prompts and history prompts.
  */
 char *
-fetch_llamacpp(config_t *config, const char *prompt, int history_length)
+acl_fetch_llamacpp(config_t *config, const char *prompt, int history_length)
 {
 	CURLcode res;
 
@@ -110,18 +111,18 @@ fetch_llamacpp(config_t *config, const char *prompt, int history_length)
 	headers = curl_slist_append(headers, "Content-Type: application/json");
 
 	struct string json_response;
-	string_init(&json_response, "");
+	acl_string_init(&json_response, "");
 
 	struct string json_request;
-	string_init(&json_request, "{\n");
+	acl_string_init(&json_request, "{\n");
 
-	char *system_role = system_role_get(config);
-	char *escaped = json_escape(system_role);
+	char *system_role = acl_system_role_get(config);
+	char *escaped = acl_json_escape(system_role);
 	free(system_role);
 
 	// Remove trailing quote
 	escaped[strlen(escaped) - 1] = '\0';
-	string_appendf(&json_request, "  \"prompt\": %s\\n", escaped);
+	acl_string_appendf(&json_request, "  \"prompt\": %s\\n", escaped);
 
 
 	// Add user and assistant n-shot prompts
@@ -140,47 +141,47 @@ fetch_llamacpp(config_t *config, const char *prompt, int history_length)
 
 	// Finally, add the user prompt
 	prompt_append(&json_request, "User", prompt);
-	string_append(&json_request, "\",\n");
+	acl_string_append(&json_request, "\",\n");
 
 	// Add configuration settings
 	if (config->llamacpp_temperature_set)
-		string_appendf(&json_request, "  \"temperature\": %g,\n", config->llamacpp_temperature);
+		acl_string_appendf(&json_request, "  \"temperature\": %g,\n", config->llamacpp_temperature);
 	if (config->llamacpp_top_k_set)
-		string_appendf(&json_request, "  \"top_k\": %d,\n", config->llamacpp_top_k);
+		acl_string_appendf(&json_request, "  \"top_k\": %d,\n", config->llamacpp_top_k);
 	if (config->llamacpp_top_p_set)
-		string_appendf(&json_request, "  \"top_p\": %g,\n", config->llamacpp_top_p);
+		acl_string_appendf(&json_request, "  \"top_p\": %g,\n", config->llamacpp_top_p);
 	if (config->llamacpp_n_predict_set)
-		string_appendf(&json_request, "  \"n_predict\": %d,\n", config->llamacpp_n_predict);
+		acl_string_appendf(&json_request, "  \"n_predict\": %d,\n", config->llamacpp_n_predict);
 	if (config->llamacpp_n_keep_set)
-		string_appendf(&json_request, "  \"n_keep\": %d,\n", config->llamacpp_n_keep);
+		acl_string_appendf(&json_request, "  \"n_keep\": %d,\n", config->llamacpp_n_keep);
 	if (config->llamacpp_tfs_z_set)
-		string_appendf(&json_request, "  \"tfs_z\": %g,\n", config->llamacpp_tfs_z);
+		acl_string_appendf(&json_request, "  \"tfs_z\": %g,\n", config->llamacpp_tfs_z);
 	if (config->llamacpp_typical_p_set)
-		string_appendf(&json_request, "  \"typical_p\": %g,\n", config->llamacpp_typical_p);
+		acl_string_appendf(&json_request, "  \"typical_p\": %g,\n", config->llamacpp_typical_p);
 	if (config->llamacpp_repeat_penalty_set)
-		string_appendf(&json_request, "  \"repeat_penalty\": %g,\n", config->llamacpp_repeat_penalty);
+		acl_string_appendf(&json_request, "  \"repeat_penalty\": %g,\n", config->llamacpp_repeat_penalty);
 	if (config->llamacpp_repeat_last_n_set)
-		string_appendf(&json_request, "  \"repeat_last_n\": %d,\n", config->llamacpp_repeat_last_n);
+		acl_string_appendf(&json_request, "  \"repeat_last_n\": %d,\n", config->llamacpp_repeat_last_n);
 	if (config->llamacpp_penalize_nl_set)
-		string_appendf(&json_request, "  \"penalize_nl\": %s,\n", config->llamacpp_penalize_nl ? "true" : "false");
+		acl_string_appendf(&json_request, "  \"penalize_nl\": %s,\n", config->llamacpp_penalize_nl ? "true" : "false");
 	if (config->llamacpp_presence_penalty_set)
-		string_appendf(&json_request, "  \"presence_penalty\": %g,\n", config->llamacpp_presence_penalty);
+		acl_string_appendf(&json_request, "  \"presence_penalty\": %g,\n", config->llamacpp_presence_penalty);
 	if (config->llamacpp_frequency_penalty_set)
-		string_appendf(&json_request, "  \"frequency_penalty\": %g,\n", config->llamacpp_frequency_penalty);
+		acl_string_appendf(&json_request, "  \"frequency_penalty\": %g,\n", config->llamacpp_frequency_penalty);
 	if (config->llamacpp_mirostat_set)
-		string_appendf(&json_request, "  \"mirostat\": %d,\n", config->llamacpp_mirostat);
+		acl_string_appendf(&json_request, "  \"mirostat\": %d,\n", config->llamacpp_mirostat);
 	if (config->llamacpp_mirostat_tau_set)
-		string_appendf(&json_request, "  \"mirostat_tau\": %g,\n", config->llamacpp_mirostat_tau);
+		acl_string_appendf(&json_request, "  \"mirostat_tau\": %g,\n", config->llamacpp_mirostat_tau);
 	if (config->llamacpp_mirostat_eta_set)
-		string_appendf(&json_request, "  \"mirostat_eta\": %g,\n", config->llamacpp_mirostat_eta);
+		acl_string_appendf(&json_request, "  \"mirostat_eta\": %g,\n", config->llamacpp_mirostat_eta);
 	// End with a non-comma
-	string_appendf(&json_request, "  \"stop\": []\n}\n");
+	acl_string_appendf(&json_request, "  \"stop\": []\n}\n");
 
-	write_log(config, json_request.ptr);
+	acl_write_log(config, json_request.ptr);
 
 	curl_easy_setopt(curl, CURLOPT_URL, config->llamacpp_endpoint);
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, string_write);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, acl_string_write);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &json_response);
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_request.ptr);
 
@@ -188,12 +189,12 @@ fetch_llamacpp(config_t *config, const char *prompt, int history_length)
 
 	if (res != CURLE_OK) {
 		free(json_request.ptr);
-		readline_printf("\nllama.cpp API call failed: %s\n",
+		acl_readline_printf("\nllama.cpp API call failed: %s\n",
 		    curl_easy_strerror(res));
 		return NULL;
 	}
 
-	write_log(config, json_response.ptr);
+	acl_write_log(config, json_response.ptr);
 
 	char *text_response = llamacpp_get_response_content(json_response.ptr);
 	free(json_request.ptr);

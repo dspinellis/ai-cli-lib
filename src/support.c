@@ -5,7 +5,7 @@
  *  The allocation functions exit the program with an error messge
  *  if allocation fails.
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ CURL *curl;
 
 // Exit with the specified formatted error message
 void
-errorf(const char *format, ...)
+acl_errorf(const char *format, ...)
 {
 	fprintf(stderr, "\nai_cli: ");
 	va_list args;
@@ -57,10 +57,10 @@ static void
 verify(bool result_ok)
 {
 	if (!result_ok)
-		errorf("memory allocation failed.");
+		acl_errorf("memory allocation failed.");
 }
 
-void *
+static void *
 safe_malloc(size_t size)
 {
 	void *p = malloc(size);
@@ -68,15 +68,7 @@ safe_malloc(size_t size)
 	return p;
 }
 
-void *
-safe_calloc(size_t nmemb, size_t size)
-{
-	void *p = calloc(nmemb, size);
-	verify(p != NULL);
-	return p;
-}
-
-void *
+static void *
 safe_realloc(void *ptr, size_t size)
 {
 	void *p = realloc(ptr, size);
@@ -85,7 +77,7 @@ safe_realloc(void *ptr, size_t size)
 }
 
 char *
-safe_strdup(const char *s)
+acl_safe_strdup(const char *s)
 {
 	void *p = strdup(s);
 	verify(p != NULL);
@@ -94,7 +86,7 @@ safe_strdup(const char *s)
 
 // Return a dnamically allocated string in the range [begin, end)
 char *
-range_strdup(const char *begin, const char *end)
+acl_range_strdup(const char *begin, const char *end)
 {
 	void *p = strndup(begin, end - begin);
 	verify(p != NULL);
@@ -103,7 +95,7 @@ range_strdup(const char *begin, const char *end)
 
 // Store the formatted output in the dynamically allocated buffer strp
 int
-safe_asprintf(char **strp, const char *fmt, ...)
+acl_safe_asprintf(char **strp, const char *fmt, ...)
 {
 	int result;
 	va_list args;
@@ -118,7 +110,7 @@ safe_asprintf(char **strp, const char *fmt, ...)
 
 // Return the cardinal number in string or -1 on error
 int
-strtocard(const char *string)
+acl_strtocard(const char *string)
 {
 	if (*string == '\0')
 		return -1;
@@ -134,7 +126,7 @@ strtocard(const char *string)
 
 // Initialize s as the specified string
 void
-string_init(string_t *s, const char *value)
+acl_string_init(string_t *s, const char *value)
 {
 
 	s->len = strlen(value);
@@ -144,7 +136,7 @@ string_init(string_t *s, const char *value)
 
 // Write result data into string s
 size_t
-string_write(void *data, size_t size, size_t nmemb, string_t *s)
+acl_string_write(void *data, size_t size, size_t nmemb, string_t *s)
 {
 	size_t bytes = size * nmemb;
 	size_t new_len = s->len + bytes;
@@ -158,7 +150,7 @@ string_write(void *data, size_t size, size_t nmemb, string_t *s)
 
 // Append specified data to the string
 size_t
-string_append(string_t *s, const char *data)
+acl_string_append(string_t *s, const char *data)
 {
 	size_t bytes = strlen(data);
 	size_t new_len = s->len + bytes;
@@ -172,7 +164,7 @@ string_append(string_t *s, const char *data)
 
 // Append printf(3)-style formatted output to string
 int
-string_appendf(string_t *s, const char *fmt, ...)
+acl_string_appendf(string_t *s, const char *fmt, ...)
 {
 	int result;
 	va_list args;
@@ -184,7 +176,7 @@ string_appendf(string_t *s, const char *fmt, ...)
 
 	verify(result != -1);
 
-	string_append(s, strp);
+	acl_string_append(s, strp);
 	free(strp);
 
 	return result;
@@ -192,7 +184,7 @@ string_appendf(string_t *s, const char *fmt, ...)
 
 // Return the short name of the program being used
 const char *
-short_program_name(void)
+acl_short_program_name(void)
 {
 	const char *name;
 #ifdef MACOS
@@ -209,7 +201,7 @@ short_program_name(void)
 
 // Show a message during readline processing
 int
-readline_printf(const char *fmt, ...)
+acl_readline_printf(const char *fmt, ...)
 {
 	int result;
 	va_list args;
@@ -230,7 +222,7 @@ readline_printf(const char *fmt, ...)
  * Each new call frees the previously allocated values.
  */
 char *
-json_escape(const char *s)
+acl_json_escape(const char *s)
 {
 	static json_t *string;
 	static char *result;
@@ -246,7 +238,7 @@ json_escape(const char *s)
 }
 
 // Output an ISO timestamp (with microseconds) to the specified file
-void
+static void
 timestamp(FILE *f)
 {
 	struct timeval tv;
@@ -276,11 +268,11 @@ curl_initialize(config_t *config)
  */
 #if !defined(__CYGWIN__)
 	if (!dlopen("libcurl." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
-		readline_printf("\nError loading libcurl: %s\n", dlerror());
+		acl_readline_printf("\nError loading libcurl: %s\n", dlerror());
 		return -1;
 	}
 	if (!dlopen("libjansson." DLL_EXTENSION, RTLD_NOW | RTLD_GLOBAL)) {
-		readline_printf("\nError loading libjansson: %s\n", dlerror());
+		acl_readline_printf("\nError loading libjansson: %s\n", dlerror());
 		return -1;
 	}
 #endif
@@ -292,13 +284,13 @@ curl_initialize(config_t *config)
 
 	curl = curl_easy_init();
 	if (!curl)
-		readline_printf("\nCURL initialization failed.\n");
+		acl_readline_printf("\nCURL initialization failed.\n");
 	return curl ? 0 : -1;
 }
 
 // Write the specified string to the logfile, if enabled
 void
-write_log(config_t *config, const char *message)
+acl_write_log(config_t *config, const char *message)
 {
 	if (!logfile)
 		return;

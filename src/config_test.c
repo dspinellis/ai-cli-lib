@@ -3,7 +3,7 @@
  *  ai-cli - readline wrapper to obtain a generative AI suggestion
  *  Configuration parsing and access
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ test_system_role_get(CuTest* tc)
 	static config_t config;
 
 	read_file_config(&config, LOCAL_CONFIG);
-	char *system_role = system_role_get(&config);
+	char *system_role = acl_system_role_get(&config);
 	CuAssertTrue(tc, starts_with(system_role, "You are an assistant"));
 	free(system_role);
 }

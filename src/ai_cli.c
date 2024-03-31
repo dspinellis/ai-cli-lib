@@ -2,7 +2,7 @@
  *
  *  ai_cli - readline wrapper to obtain a generative AI suggestion
  *
- *  Copyright 2023 Diomidis Spinellis
+ *  Copyright 2023-2024 Diomidis Spinellis
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ static int *history_length_ptr;
 // Loaded configuration
 static config_t config;
 
-// API fetch function, e.g. fetch_openai or fetch_llamacpp
+// API fetch function, e.g. acl_fetch_openai or acl_fetch_llamacpp
 
-char * (*fetch)(config_t *config, const char *prompt, int history_length);
+static char * (*fetch)(config_t *config, const char *prompt, int history_length);
 
 /*
  * Add the specified prompt to the RL history, as a comment if the
@@ -69,7 +69,7 @@ add_prompt_to_history(const char *prompt)
 	}
 
 	char *commented_prompt;
-	safe_asprintf(&commented_prompt, "%s %s", config.prompt_comment,
+	acl_safe_asprintf(&commented_prompt, "%s %s", config.prompt_comment,
 	    prompt);
 	add_history(commented_prompt);
 	free(commented_prompt);
@@ -145,7 +145,7 @@ setup(void)
 	vi_movement_keymap_ptr = dlsym(RTLD_DEFAULT, "vi_movement_keymap");
 	history_length_ptr = dlsym(RTLD_DEFAULT, "history_length");
 
-	read_config(&config);
+	acl_read_config(&config);
 
 	if (!config.prompt_system) {
 		fprintf(stderr, "No default ai-cli configuration loaded.  Installation problem?\n");
@@ -163,18 +163,18 @@ setup(void)
 	REQUIRE(general, api);
 
 	if (strcmp(config.general_api, "openai") == 0) {
-		fetch = fetch_openai;
+		fetch = acl_fetch_openai;
 		REQUIRE(openai, key);
 		REQUIRE(openai, endpoint);
 	} else if (strcmp(config.general_api, "anthropic") == 0) {
-		fetch = fetch_anthropic;
+		fetch = acl_fetch_anthropic;
 		REQUIRE(anthropic, key);
 		REQUIRE(anthropic, endpoint);
 		REQUIRE(anthropic, version);
 	} else if (strcmp(config.general_api, "hal") == 0) {
-		fetch = fetch_hal;
+		fetch = acl_fetch_hal;
 	} else if (strcmp(config.general_api, "llamacpp") == 0) {
-		fetch = fetch_llamacpp;
+		fetch = acl_fetch_llamacpp;
 		REQUIRE(llamacpp, endpoint);
 	} else {
 		fprintf(stderr, "Unsupported API: [%s].\n", config.general_api);

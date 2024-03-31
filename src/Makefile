@@ -1,3 +1,23 @@
+#
+# ai_cli - readline wrapper to obtain a generative AI suggestion
+#
+# GNU Makefile for building, installing, and testing ai-cli-lib
+#
+# Copyright 2023-2024 Diomidis Spinellis
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # Help: Set PREFIX=~ for a local install; PREFIX=/usr for a system install.
 # Help: By default PREFIX is set to install in /usr/local.
 PREFIX ?= /usr/local
@@ -69,7 +89,7 @@ e2e-test: $(PROGS) # Help: Test the readline hook
 	  grep Dave
 
 all-tests: $(TEST_SRC) $(RL_SRC)
-	$(CC) -DUNIT_TEST $(CFLAGS) $(LDFLAGS) all_tests.c $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -lreadline -o $@
+	$(CC) -DUNIT_TEST $(CFLAGS) $(LDFLAGS) all_tests.c -DUNIT_TEST $(TEST_SRC) $(RL_SRC) CuTest.c $(LIB) -ldl -lreadline -o $@
 
 unit-test: all-tests # Help: Run unit tests
 	./all-tests
