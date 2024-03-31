@@ -33,7 +33,8 @@ LIB=-lcurl -ljansson
 
 # Maximum configuration file size length; allocate on the stack; check errors
 # Report all warnings, treat warnings as errors
-CFLAGS=-DINI_MAX_LINE=2048 -DINI_USE_STACK=0 -DINI_ALLOW_REALLOC=1 -DINI_STOP_ON_FIRST_ERROR=1 -Wall -Werror -L/usr/local/lib
+CFLAGS=-DINI_MAX_LINE=2048 -DINI_USE_STACK=0 -DINI_ALLOW_REALLOC=1 -DINI_STOP_ON_FIRST_ERROR=1 -Wall -Werror
+LDFLAGS=-L/usr/local/lib
 
 # Help: Set DEBUG=1 to compile with debug information.
 ifdef DEBUG
