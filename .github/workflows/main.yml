@@ -35,5 +35,8 @@ jobs:
     - name: Unit test
       run: make -C src unit-test
 
+    - name: Global name verification
+      run: make -C src verify-global-defs
+
     - name: End-to-end test
       run: make -C src e2e-test

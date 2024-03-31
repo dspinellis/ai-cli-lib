@@ -80,6 +80,12 @@ rl_driver: rl_driver.c
 $(SHARED_LIB): $(RL_SRC)
 	$(CC) $(SHARED_FLAGS) $(CFLAGS) $(LDFLAGS) $(RL_SRC) -o $@ -ldl $(SHARED_LIB_LIB)
 
+verify-global-defs: # Help: Verify prefix of globally visible definitions
+	$(CC) $(CFLAGS) $(RL_SRC) -c
+	# Check that global not undefined (U) definitions are prefixed
+	# The output (grep success) signifies unprefixed global defs
+	! nm *.o | sed 's/^ /x/' | awk '$$2 ~ /[A-TVZ]/ {print $$3}' | grep -Ev '^(acl|ini|curl)'
+
 e2e-run: $(PROGS) # Help: Invoke the library with a readline read/print loop
 	$(PRELOAD_VAR)=`pwd`/$(SHARED_LIB) $(SET_ADD_LIB) ./rl_driver
 
