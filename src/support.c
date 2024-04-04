@@ -37,7 +37,7 @@
 #include "support.h"
 
 static FILE *logfile;
-CURL *curl;
+CURL *acl_curl;
 
 // Exit with the specified formatted error message
 void
@@ -253,7 +253,7 @@ timestamp(FILE *f)
 }
 
 /*
- * Initialize curl connections
+ * Initialize Curl connections
  * Return 0 on success -1 on error
  */
 int
@@ -282,10 +282,10 @@ curl_initialize(config_t *config)
 
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 
-	curl = curl_easy_init();
-	if (!curl)
+	acl_curl = curl_easy_init();
+	if (!acl_curl)
 		acl_readline_printf("\nCURL initialization failed.\n");
-	return curl ? 0 : -1;
+	return acl_curl ? 0 : -1;
 }
 
 // Write the specified string to the logfile, if enabled

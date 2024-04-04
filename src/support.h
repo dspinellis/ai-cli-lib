@@ -25,7 +25,7 @@
 
 #include "config.h"
 
-extern CURL *curl;
+extern CURL *acl_curl;
 
 int acl_safe_asprintf(char **strp, const char *fmt, ...);
 char *acl_safe_strdup(const char *s);

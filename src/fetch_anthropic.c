@@ -90,7 +90,7 @@ acl_fetch_anthropic(config_t *config, const char *prompt, int history_length)
 {
 	CURLcode res;
 
-	if (!curl && initialize(config) < 0)
+	if (!acl_curl && initialize(config) < 0)
 		return NULL;
 
 	if (config->general_verbose)
@@ -166,13 +166,13 @@ acl_fetch_anthropic(config_t *config, const char *prompt, int history_length)
 
 	acl_write_log(config, json_request.ptr);
 
-	curl_easy_setopt(curl, CURLOPT_URL, config->anthropic_endpoint);
-	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, acl_string_write);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &json_response);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_request.ptr);
+	curl_easy_setopt(acl_curl, CURLOPT_URL, config->anthropic_endpoint);
+	curl_easy_setopt(acl_curl, CURLOPT_HTTPHEADER, headers);
+	curl_easy_setopt(acl_curl, CURLOPT_WRITEFUNCTION, acl_string_write);
+	curl_easy_setopt(acl_curl, CURLOPT_WRITEDATA, &json_response);
+	curl_easy_setopt(acl_curl, CURLOPT_POSTFIELDS, json_request.ptr);
 
-	res = curl_easy_perform(curl);
+	res = curl_easy_perform(acl_curl);
 
 	if (res != CURLE_OK) {
 		free(json_request.ptr);
