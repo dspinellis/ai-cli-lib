@@ -56,23 +56,28 @@ static char * (*fetch)(config_t *config, const char *prompt, int history_length)
 /*
  * Add the specified prompt to the RL history, as a comment if the
  * comment prefix is defined.
+ * Return the length of the added comment.
  */
-static void
-add_prompt_to_history(const char *prompt)
+static int
+add_commented_prompt_to_history(const char *prompt)
 {
 	if (prompt == NULL)
-		return;
+		return 0;
 
 	if (!config.prompt_comment_set) {
 		add_history(prompt);
-		return;
+		return 0;
 	}
 
 	char *commented_prompt;
 	acl_safe_asprintf(&commented_prompt, "%s %s", config.prompt_comment,
 	    prompt);
 	add_history(commented_prompt);
+	rl_replace_line(commented_prompt, 0);
+	*rl_point_ptr = *rl_end_ptr;
+	rl_redisplay();
 	free(commented_prompt);
+	return strlen(config.prompt_comment);
 }
 
 /*
@@ -89,8 +94,8 @@ query_ai(int count, int key)
 		prev_response = NULL;
 	}
 
-	add_prompt_to_history(*rl_line_buffer_ptr);
-	char *response = fetch(&config, *rl_line_buffer_ptr,
+	int comment_len = add_commented_prompt_to_history(*rl_line_buffer_ptr);
+	char *response = fetch(&config, *rl_line_buffer_ptr + comment_len,
 	    *history_length_ptr);
 	if (!response)
 		return -1;
