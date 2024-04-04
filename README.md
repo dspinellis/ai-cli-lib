@@ -170,48 +170,14 @@ if you want to use the capabilities of the _ai-cli_ library, configure your syst
 to use the Homebrew commands in preference to the ones supplied with macOS.
 
 ## Shell startup configuration
-You can configure the _ai-cli_ library to be always available in your _bash_ shell by
-adding the following lines in your `.bashrc` file.
-Adjust the `AI_CLI_LIB` setting to match the _ai-cli_ library installation path;
+You can configure the _ai-cli_ library to be always available in your _bash_
+shell by adding the following lines in your `.bashrc` file
+(ideally near its beginning for performance reasons).
+Adjust the provided path match the _ai-cli_ library installation path;
 it is currently set for a local installation in your home directory.
 ```bash
-# >>> initialize the ai-cli library >>>
-
-# Location of the ai-cli shared library; adjust as needed.
-AI_CLI_LIB=("$HOME/lib/ai_cli."*)
-
-# Execute only if configured, installed, and not initialized.
-if [[ -r ~/.aicliconfig && -r $AI_CLI_LIB && "$LD_PRELOAD" != *$AI_CLI_LIB* ]]
-then
-  # Set Linux and Cygwin environment variable.
-  if [ -z "$LD_PRELOAD" ] ; then
-    export LD_PRELOAD="$AI_CLI_LIB"
-  else
-    LD_PRELOAD="$LD_PRELOAD:$AI_CLI_LIB"
-  fi
-
-  # Set macOS environment variables.
-  if [ -z "$DYLD_LIBRARY_PATH" ] ; then
-    export DYLD_LIBRARY_PATH=/opt/homebrew/lib
-  else
-    DYLD_LIBRARY_PATH="/opt/homebrew/lib:$DYLD_LIBRARY_PATH"
-  fi
-  if [ -z "$DYLD_INSERT_LIBRARIES" ] ; then
-    export DYLD_INSERT_LIBRARIES="$AI_CLI_LIB"
-  else
-    DYLD_INSERT_LIBRARIES="$LD_PRELOAD:$AI_CLI_LIB"
-  fi
-
-  # Overlay current bash with a new instance, which will include the required
-  # environment variables.
-  if shopt -q login_shell ; then
-    exec -l bash
-  else
-    exec bash
-  fi
-
-fi
-# <<< initialize the ai-cli library <<<
+# Initialize the ai-cli library
+source $HOME/share/ai-cli/ai-cli-activate-bash.sh
 ```
 
 ## Reference documentation

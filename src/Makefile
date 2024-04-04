@@ -26,6 +26,7 @@ MANPREFIX ?= "$(PREFIX)/share/man/"
 SHAREPREFIX ?= "$(PREFIX)/share/ai-cli"
 
 PROGS=rl_driver $(SHARED_LIB)
+ACTIVATION_SCRIPTS=$(wildcard ai-cli-activate-*)
 RL_SRC=ai_cli.c config.c ini.c fetch_anthropic.c fetch_hal.c fetch_openai.c \
        fetch_llamacpp.c support.c
 TEST_SRC=$(wildcard *_test.c)
@@ -113,6 +114,9 @@ install: ai_cli.$(DLL_EXTENSION) # Help: Install library and manual pages
 	install -m 644 ai_cli.5 $(DESTDIR)$(MANPREFIX)/man5
 	install -m 644 ai_cli.7 $(DESTDIR)$(MANPREFIX)/man7
 	install -m 644 ai-cli-config $(DESTDIR)$(SHAREPREFIX)/config
+	for s in $(ACTIVATION_SCRIPTS) ; do \
+	  sed -e "s|__LIBPREFIX__|$(LIBPREFIX)|" $$s >$(DESTDIR)$(SHAREPREFIX)/$$s ; \
+	done
 
 help: # Help: Show this help message
 	@echo 'The following make targets are available.'
