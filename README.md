@@ -73,18 +73,28 @@ make install PREFIX=~
 ```
 
 ## Run
-* Under __Linux__ and __Cygwin__ set the `LD_PRELOAD` environment variable
-  to load the library using its full path.
-  For example, under _bash_ run
-  `export LD_PRELOAD=/usr/local/lib/ai_cli.so` (global installation) or
-  `export LD_PRELOAD=/home/myname/lib/ai_cli.so` (local installation).
-* Under __macOS__ set the `DYLD_INSERT_LIBRARIES` environment variable to load the
-  library using its full path.
-  For example, under _bash_ run
-  `export DYLD_INSERT_LIBRARIES=/Users/myname/lib/ai_cli.dylib`.
-  Also set the `DYLD_LIBRARY_PATH` environment variable to include
-  the Homebrew library directory, e.g.
-  `export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH`.
+* Configure the _ai-cli_ library to be activated when your _bash_
+  shell starts up by adding the following lines in your `.bashrc` file
+  (ideally near its beginning for performance reasons).
+  Adjust the provided path match the _ai-cli_ library installation path;
+  it is currently set for a local installation in your home directory.
+  ```bash
+  # Initialize the ai-cli library
+  source $HOME/share/ai-cli/ai-cli-activate-bash.sh
+  ```
+* Alternatively, implement one of the following system-specific configurations.
+  * Under __Linux__ and __Cygwin__ set the `LD_PRELOAD` environment variable
+    to load the library using its full path.
+    For example, under _bash_ run
+    `export LD_PRELOAD=/usr/local/lib/ai_cli.so` (global installation) or
+    `export LD_PRELOAD=/home/myname/lib/ai_cli.so` (local installation).
+  * Under __macOS__ set the `DYLD_INSERT_LIBRARIES` environment variable to
+    load the library using its full path.
+    For example, under _bash_ run
+    `export DYLD_INSERT_LIBRARIES=/Users/myname/lib/ai_cli.dylib`.
+    Also set the `DYLD_LIBRARY_PATH` environment variable to include
+    the Homebrew library directory, e.g.
+    `export DYLD_LIBRARY_PATH=/opt/homebrew/lib:$DYLD_LIBRARY_PATH`.
 * Perform one of the following.
   * Obtain your
     [Anthropic API key](https://console.anthropic.com/settings/keys)
@@ -169,16 +179,6 @@ Consequently,
 if you want to use the capabilities of the _ai-cli_ library, configure your system
 to use the Homebrew commands in preference to the ones supplied with macOS.
 
-## Shell startup configuration
-You can configure the _ai-cli_ library to be always available in your _bash_
-shell by adding the following lines in your `.bashrc` file
-(ideally near its beginning for performance reasons).
-Adjust the provided path match the _ai-cli_ library installation path;
-it is currently set for a local installation in your home directory.
-```bash
-# Initialize the ai-cli library
-source $HOME/share/ai-cli/ai-cli-activate-bash.sh
-```
 
 ## Reference documentation
 The _ai-cli_ reference documentation is provided as Unix manual
