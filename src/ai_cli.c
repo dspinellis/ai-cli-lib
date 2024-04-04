@@ -143,7 +143,6 @@ setup(void)
 	if (dlerror())
 		return; // Program not linked with readline(3)
 
-
 	// Obtain remaining variable symbols
 	rl_end_ptr = dlsym(RTLD_DEFAULT, "rl_end");
 	rl_point_ptr = dlsym(RTLD_DEFAULT, "rl_point");

@@ -66,7 +66,8 @@ anthropic_get_response_content(const char *json_response)
 }
 
 /*
- * Initialize anthropic connection
+ * Initialize curl and anthropic connection
+ * Sets curl variable
  * Return 0 on success -1 on error
  */
 static int
@@ -93,7 +94,7 @@ acl_fetch_anthropic(config_t *config, const char *prompt, int history_length)
 		return NULL;
 
 	if (config->general_verbose)
-		fprintf(stderr, "\nContacting Llamacpp API...\n");
+		fprintf(stderr, "\nContacting Anthropic API...\n");
 
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "content-type: application/json");

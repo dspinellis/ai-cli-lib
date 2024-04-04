@@ -18,6 +18,9 @@
  *  limitations under the License.
  */
 
+#include <stdbool.h>
+#include <unistd.h>
+
 #include "config.h"
 #include "fetch_hal.h"
 #include "support.h"
@@ -32,5 +35,16 @@
 char *
 acl_fetch_hal(config_t *config, const char *prompt, int history_length)
 {
+	static bool initialized;
+
+	if (!initialized) {
+		if (config->general_verbose)
+			fprintf(stderr, "\nInitializing HAL, program name [%s] system prompt to use [%s]\n",
+			    acl_short_program_name(), config->prompt_system);
+		initialized = true;
+	}
+	if (config->general_verbose)
+		fprintf(stderr, "\nHAL is processing...\n");
+	sleep(1); // Simulate processing latency
 	return acl_safe_strdup("# I'm sorry, Dave. I'm afraid I can't do that.");
 }
