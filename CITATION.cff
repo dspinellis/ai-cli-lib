@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+title: ai-cli-lib
+message: >-
+  If you use this software, please cite, using the metadata from this file,
+  both the article from preferred-citation and the software itself.
+preferred-citation:
+  date-released: "2023-11-01"
+  doi: "10.1109/MS.2023.3307170"
+  title: "Commands as AI Conversations"
+  authors:
+    - family-names: "Spinellis"
+      given-names: "Diomidis"
+  type: "article"
+  volume: 40
+  issue: 6
+  journal: "IEEE Software"
+  start: 22
+  end: 26
+type: software
+authors:
+  - given-names: Diomidis
+    family-names: Spinellis
+    email: dds@aueb.gr
+    affiliation: Athens University of Economics and Business
+    orcid: 'https://orcid.org/0000-0003-4231-1897'
+repository-code: 'https://github.com/dspinellis/ai-cli-lib'
+keywords:
+  - CLI
+  - LLM
+  - Generative AI
+  - Unix
+  - Shell
+  - Readline
+  - command line interface
+license: Apache-2.0
