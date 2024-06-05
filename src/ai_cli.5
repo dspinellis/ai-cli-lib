@@ -228,12 +228,16 @@ followed by the name of a program,
 such as
 .B bash
 or
-.B mysql
+.BR mysql ,
 are used to provide program-specific configuration
-options for values associated with the
+options for values associated with the global
 .B prompt
-section, and also multishot example prompts
-for improving the obtained responses.
+section (e.g.
+.B system
+and
+.BR context ),
+the program's comment string,
+and also multishot example prompts for improving the obtained responses.
 The multishot example prompts are provided by
 .B ai_cli
 at the beginning of each API request.
