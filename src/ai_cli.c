@@ -143,6 +143,23 @@ setup(void)
 	if (dlerror())
 		return; // Program not linked with readline(3)
 
+	/*
+	 * GNU awk 5.2.1 under Debian bookworm and maybe also other
+	 * versions is distributed with a persistent memory allocator (PMA)
+	 * library, which requires initialization with pma_init
+	 * before using it.  If the allocator is not initialized calls
+	 * to malloc will (such as those * made by rl_add_defun() in this
+	 * function) will fail with a fatal error, such as the following.
+	 * (null): fatal: node.c:1075:more_blocks: freep: cannot allocate
+	 * 11200 bytes of memory: [unrelated error message]
+	 * To avoid this problem, exit if called from awk.
+	 * In the future more programs may need to get deny-listed here.
+	 */
+	const char *program_name = acl_short_program_name();
+	if (strcmp(program_name, "awk") == 0
+	    || strcmp(program_name, "gawk") == 0)
+		return;
+
 	// Obtain remaining variable symbols
 	rl_end_ptr = dlsym(RTLD_DEFAULT, "rl_end");
 	rl_point_ptr = dlsym(RTLD_DEFAULT, "rl_point");
