@@ -11,7 +11,7 @@ or one provided through a
 Think of it as a command line copilot.
 
 
-![Demonstration](https://gist.githubusercontent.com/dspinellis/b25d9b3c3e6d6a6260774c32dc7be817/raw/cc191580cd9aa94bb2a2471e1f43b75a49817b64/ai-cli.gif)
+![Demonstration](https://gist.githubusercontent.com/dspinellis/b25d9b3c3e6d6a6260774c32dc7be817/raw/d74986b42bd463a8f2fb57f59f094b2c154bf6a5/ai-cli.gif)
 
 ## Build
 The _ai-cli_
